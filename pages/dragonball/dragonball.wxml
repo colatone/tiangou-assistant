@@ -1,0 +1,97 @@
+<view class="container">
+  <!-- 分段切换 -->
+  <view class="seg">
+    <view class="seg-item {{kind==='star'?'active':''}}" data-kind="star" bindtap="switchKind">D</view>
+    <view class="seg-item {{kind==='redblue'?'active':''}}" data-kind="redblue" bindtap="switchKind">S</view>
+  </view>
+
+  <!-- 错误态 -->
+  <view wx:if="{{error}}" class="error-bar" bindtap="onRetry">⚠️ {{error}}</view>
+
+  <!-- 最新现世 -->
+  <view class="card">
+    <view class="sec-title">最新现世</view>
+    <view wx:if="{{latest}}" class="follow-row latest-row">
+      <view class="balls">
+        <text wx:for="{{latest.main}}" wx:for-item="n" wx:key="*this" class="ball main-ball sm">{{n<10?'0'+n:n}}</text>
+      </view>
+      <view class="balls">
+        <text wx:for="{{latest.sub}}" wx:for-item="n" wx:key="*this" class="ball sub-ball sm">{{n<10?'0'+n:n}}</text>
+      </view>
+      <view class="latest-meta">
+        <text class="lm-seq">第 {{latest.seq}} 期</text>
+        <text class="lm-date">{{latest.date}}{{latest.mock?' · 示例':''}}</text>
+      </view>
+    </view>
+    <view wx:else class="empty-tip">龙珠现世同步中…</view>
+  </view>
+
+  <!-- 状态条 -->
+  <view class="track-bar">
+    <text class="dot {{tracking?'on':''}}"></text>
+    <text>{{tracking ? '现世追踪中' : '已暂停'}} · 最近更新 {{lastSync}}</text>
+  </view>
+
+  <!-- 神龙指引 -->
+  <view class="card">
+    <view class="sec-title">神龙指引 <text class="seq-tag">第 {{guideSeq}} 期</text></view>
+    <text class="sec-sub">结合近期龙珠气运智能推演，仅供娱乐参考</text>
+
+    <view wx:if="{{hotCold}}" class="hotcold">
+      <text class="hc-label">热门</text>
+      <text wx:for="{{hotCold.hotMain}}" wx:for-item="n" wx:key="*this" class="hc-tag hot">{{n<10?'0'+n:n}}</text>
+      <text class="hc-label">冷门</text>
+      <text wx:for="{{hotCold.coldMain}}" wx:for-item="n" wx:key="*this" class="hc-tag cold">{{n<10?'0'+n:n}}</text>
+    </view>
+
+    <view wx:if="{{showGuides}}" class="guides">
+      <view wx:for="{{guides}}" wx:key="index" wx:for-item="g" class="guide-row">
+        <view class="balls">
+          <text wx:for="{{g.main}}" wx:for-item="n" wx:key="*this" class="ball main-ball sm">{{n<10?'0'+n:n}}</text>
+        </view>
+        <view class="balls">
+          <text wx:for="{{g.sub}}" wx:for-item="n" wx:key="*this" class="ball sub-ball sm">{{n<10?'0'+n:n}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="guide-actions">
+      <button class="btn-s {{collectedThisSeq ? 'btn-disabled' : ''}}" bindtap="collectAllGuides" disabled="{{collectedThisSeq}}">{{collectedThisSeq ? '已收藏' : '一键收藏'}}</button>
+      <button class="btn-s" bindtap="onSaveShare">保存图片</button>
+    </view>
+  </view>
+
+  <!-- 我的龙珠阵 -->
+  <view class="card">
+    <view class="sec-title">我的龙珠阵</view>
+    <view wx:if="{{followList.length===0}}" class="empty-tip">还没有收藏，生成一组试试</view>
+    <block wx:for="{{followGroups}}" wx:key="seq" wx:for-item="grp">
+      <view class="follow-group">
+        <view class="fg-head">
+          <text class="fg-seq">第 {{grp.seq}} 期</text>
+          <text class="fg-date">收藏 {{grp.dateLabel}}</text>
+        </view>
+        <view wx:for="{{grp.items}}" wx:key="id" wx:for-item="item" class="follow-row">
+          <view class="balls">
+            <text wx:for="{{item.main}}" wx:for-item="n" wx:key="*this" class="ball main-ball sm">{{n<10?'0'+n:n}}</text>
+          </view>
+          <view class="balls">
+            <text wx:for="{{item.sub}}" wx:for-item="n" wx:key="*this" class="ball sub-ball sm">{{n<10?'0'+n:n}}</text>
+          </view>
+          <view class="follow-status {{item.statusClass}}">{{item.statusText}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 署名 + 免责 -->
+  <view class="attr">{{attribution}}</view>
+  <view class="disclaimer">龙珠组合为随机参考，仅供娱乐，与任何现实博彩无关</view>
+
+  <!-- 底部菜单栏（与其他工具一致） -->
+  <view class="tabbar-placeholder"></view>
+  <custom-tabbar current="tools" />
+
+  <!-- 隐藏分享画布 -->
+  <canvas type="2d" id="shareCanvas" class="share-canvas"></canvas>
+</view>

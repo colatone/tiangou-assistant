@@ -1,0 +1,10 @@
+/* components/lottery-wheel/lottery-wheel.wxss */
+.wheel-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24rpx;
+}
+
+.wheel-canvas {
+  display: block;
+}

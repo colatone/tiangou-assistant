@@ -1,0 +1,4 @@
+<!-- components/lottery-wheel/lottery-wheel.wxml -->
+<view class="wheel-wrap" style="width:{{width}}px;height:{{height}}px;">
+  <canvas type="2d" id="wheelCanvas" class="wheel-canvas" style="width:{{width}}px;height:{{height}}px;"></canvas>
+</view>

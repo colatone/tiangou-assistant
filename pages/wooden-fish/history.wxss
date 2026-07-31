@@ -1,0 +1,100 @@
+/* pages/wooden-fish/history.wxss — 独立历史战绩页 */
+.page {
+  min-height: 100vh;
+  background: #F8F6F2;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+/* 汇总卡片 */
+.summary-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 32rpx 28rpx 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+}
+.sc-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 24rpx;
+}
+.sc-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40rpx;
+}
+.sc-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+.sc-num {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #B08D6E;
+}
+.sc-label {
+  font-size: 22rpx;
+  color: #AAAAAA;
+}
+.sc-line {
+  width: 1rpx;
+  height: 56rpx;
+  background: #EEEEEE;
+}
+
+/* 列表 */
+.list-wrap {
+  height: calc(100vh - 320rpx);
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26rpx 28rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+.row:last-child { border-bottom: none; }
+.row-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.row-date {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #444444;
+  min-width: 80rpx;
+}
+.row-wd {
+  font-size: 24rpx;
+  color: #999999;
+}
+.row-tag {
+  font-size: 18rpx;
+  color: #FFFFFF;
+  background: #B08D6E;
+  padding: 2rpx 10rpx;
+  border-radius: 10rpx;
+}
+.row-right {}
+.row-hits {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #B08D6E;
+}
+.row-none {
+  font-size: 26rpx;
+  color: #DDDDDD;
+}
+.row.has-data { background: #FAFAFA; }
+.row.today { background: #FFF8F0; }
+.bottom-pad { height: 40rpx; }

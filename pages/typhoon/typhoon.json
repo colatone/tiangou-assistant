@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "台风实时路径",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "typhoon-tracker": "/components/typhoon-tracker/typhoon-tracker"
+  }
+}

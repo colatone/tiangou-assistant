@@ -1,0 +1,104 @@
+<!-- components/tide-detail/tide-detail.wxml -->
+<view class="tide-detail" wx:if="{{data}}">
+
+  <!-- mock 提示 -->
+  <view class="mock-hint" wx:if="{{mockHint}}">* 当前为示例数据</view>
+
+  <!-- 潮位柱状图 -->
+  <view class="card curve-card">
+    <view class="card-title">潮位曲线</view>
+    <view class="curve-container">
+      <view class="curve-chart">
+        <view class="grid-line grid-top"></view>
+        <view class="grid-line grid-mid"></view>
+        <view class="grid-line grid-bottom"></view>
+
+        <view class="curve-bars">
+          <view wx:for="{{series}}" wx:key="index" class="curve-bar-wrap">
+            <view
+              class="curve-bar {{item.isHigh ? 'bar-high' : ''}} {{item.isLow ? 'bar-low' : ''}}"
+              style="height: {{item.barHeight}}%"
+            >
+              <view wx:if="{{item.suitable}}" class="bar-check">🦀</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="curve-marks">
+          <!-- 时间标签：统一水平排列，贴最高圆点上方 -->
+          <view
+            wx:for="{{tideMarks}}"
+            wx:key="index"
+            class="curve-label-mark {{item.type === 'high' ? 'mark-high' : 'mark-low'}}"
+            style="left: {{item.xPct}}%; bottom: {{tideLabelBaseline}}%"
+          >
+            <text class="mark-label">{{item.hm}}</text>
+          </view>
+          <!-- 高低潮彩色圆点：水平居中对齐柱子中心线，紧贴时间标签下方 -->
+          <view
+            wx:for="{{tideMarks}}"
+            wx:key="index"
+            class="curve-dot-mark {{item.type === 'high' ? 'mark-high' : 'mark-low'}}"
+            style="left: {{item.xPct}}%; bottom: {{tideDotBaseline}}%"
+          >
+            <view class="mark-dot"></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="curve-x-labels">
+        <text class="x-label">00:00</text>
+        <text class="x-label">06:00</text>
+        <text class="x-label">12:00</text>
+        <text class="x-label">18:00</text>
+        <text class="x-label">24:00</text>
+      </view>
+
+      <view class="curve-legend">
+        <view class="legend-item"><view class="dot dot-high"></view><text>高潮</text></view>
+        <view class="legend-item"><view class="dot dot-low"></view><text>低潮</text></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 涨退潮时刻表 -->
+  <view class="card table-card">
+    <view class="card-title">涨潮 / 退潮时刻</view>
+    <view class="phase-list" wx:if="{{phases.length}}">
+      <view
+        class="phase-row {{item.phase === 'flood' ? 'row-flood' : 'row-ebb'}}"
+        wx:for="{{phases}}"
+        wx:key="index"
+      >
+        <view class="phase-icon">{{item.phase === 'flood' ? '^' : 'v'}}</view>
+        <view class="phase-type">{{item.phase === 'flood' ? '涨潮' : '退潮'}}</view>
+        <view class="phase-time">{{item.startTime}} - {{item.endTime}}</view>
+        <view class="phase-range">{{item.startH}}m - {{item.endH}}m</view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:else>暂无数据</view>
+  </view>
+
+  <!-- 推荐赶海时间 -->
+  <view class="card recommend-card" wx:if="{{recommend.length}}">
+    <view class="recommend-header">
+      <text class="recommend-icon">*</text>
+      <text class="recommend-title">推荐赶海时间</text>
+    </view>
+    <view class="recommend-body">
+      <view class="rec-item" wx:for="{{recommend}}" wx:key="index">
+        <view class="rec-main">
+          <text class="rec-time">{{item.start}} ~ {{item.end}}</text>
+          <text class="rec-score score-{{item.level}}">{{item.score}}分</text>
+          <text class="rec-level level-{{item.level}}">{{item.levelText}}</text>
+        </view>
+        <view class="rec-sub">低潮 {{item.lowTime}} 高度约{{item.lowHeight}}m {{item.reason}}</view>
+      </view>
+    </view>
+  </view>
+
+</view>
+
+<view class="empty-state" wx:if="{{!data}}">
+  <text class="empty-text">暂无潮汐数据</text>
+</view>

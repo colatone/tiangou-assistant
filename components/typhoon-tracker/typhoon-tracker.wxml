@@ -1,0 +1,161 @@
+<!-- components/typhoon-tracker/typhoon-tracker.wxml -->
+<view class="tracker">
+  <!-- 地图路径 -->
+  <view class="map-wrap">
+    <map
+      id="typhoonMap"
+      class="map"
+      longitude="{{longitude}}"
+      latitude="{{latitude}}"
+      scale="{{scale}}"
+      markers="{{allMarkers}}"
+      polyline="{{polylines}}"
+      enable-rotate="{{false}}"
+      show-location="{{false}}"
+      subkey="{{mapKey}}"
+      bindmarkertap="onMapMarkerTap"
+      bindregionchange="onRegionChange"
+    >
+      <cover-view wx:if="{{userScreen}}" class="loc-pulse" style="left:{{userScreen.x}}px; top:{{userScreen.y}}px;">
+        <cover-view class="loc-pulse-ring"></cover-view>
+        <cover-view class="loc-pulse-ring r2"></cover-view>
+      </cover-view>
+    </map>
+    <view class="map-badge">🌀 {{stormName || '台风路径'}}</view>
+    <view class="locate-btn" bindtap="onLocateMe">
+      <text class="locate-icon">📍</text>
+    </view>
+  </view>
+
+  <!-- 图例（强度 + 路径同处一行，紧凑内联） -->
+  <view class="legend card">
+    <view class="legend-title">图例</view>
+    <view class="legend-inline">
+      <block wx:for="{{legendRows}}" wx:for-item="row" wx:key="index">
+        <view class="legend-item" wx:for="{{row}}" wx:for-item="item" wx:key="level">
+          <view class="legend-dot" style="background:{{item.color}}"></view>
+          <text class="legend-name">{{item.name}}</text>
+        </view>
+      </block>
+      <view class="legend-sep"></view>
+      <view class="path-item">
+        <view class="line-real-sm"></view>
+        <text class="path-text">实况路径</text>
+      </view>
+      <view class="path-item">
+        <view class="line-forecast-sm"></view>
+        <text class="path-text">预报路径</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 时间轴 -->
+  <view class="timeline card">
+    <view class="timeline-head">
+      <text class="timeline-label">时间轴追踪</text>
+      <view class="play-btn" bindtap="onTogglePlay">{{isPlaying ? '⏸' : '▶'}}</view>
+    </view>
+    <slider
+      class="timeline-slider"
+      min="0"
+      max="{{points.length - 1}}"
+      value="{{currentIndex}}"
+      block-size="22"
+      activeColor="#FF8C69"
+      backgroundColor="#FFD1B3"
+      bindchanging="onSliderChanging"
+      bindchange="onSliderChange"
+    />
+    <view class="timeline-scale">
+      <text>{{scaleStart}}</text>
+      <text>{{scaleEnd}}</text>
+    </view>
+  </view>
+
+  <!-- 当前点信息面板（时间轴驱动） -->
+  <view class="info card" wx:if="{{current}}">
+    <view class="info-head">
+      <text class="info-level" style="background:{{current.color}}">{{current.levelName}}</text>
+      <text class="info-tag {{current.isForecast ? 'forecast' : 'real'}}">{{current.isForecast ? '预报' : '实况'}}</text>
+    </view>
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="label">时间</text>
+        <text class="value">{{current.time}}</text>
+        <text class="tz">{{tzLabel}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="label">中心位置</text>
+        <text class="value">{{current.latFmt}} {{current.lngFmt}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="label">中心气压</text>
+        <text class="value">{{current.pressure || '—'}} hPa</text>
+      </view>
+      <view class="info-cell">
+        <text class="label">最大风速</text>
+        <text class="value">{{current.windSpeed || '—'}} m/s</text>
+      </view>
+      <view class="info-cell">
+        <text class="label">移动方向</text>
+        <text class="value">{{current.moveDir}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="label">移动速度</text>
+        <text class="value">{{current.moveSpeed || '—'}} km/h</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 点击路径点弹出的详情面板（底部弹出） ===== -->
+  <view class="popup-mask" wx:if="{{popupVisible && popupPoint}}" bindtap="onClosePopup"></view>
+  <view class="popup-sheet {{popupVisible && popupPoint ? 'show' : ''}}" catchtouchmove="preventMove">
+    <!-- 弹窗拖拽头 -->
+    <view class="popup-handle-bar">
+      <view class="popup-handle"></view>
+    </view>
+    <!-- 弹窗标题行 -->
+    <view class="popup-header">
+      <view class="popup-title-row">
+        <text class="popup-level-tag" style="background:{{popupPoint.color}}">{{popupPoint.levelName}}</text>
+        <text class="popup-time">{{popupPoint.time}}</text>
+        <text class="popup-type-tag {{popupPoint.isForecast ? 'forecast' : 'real'}}">{{popupPoint.isForecast ? '预报' : '实况'}}</text>
+      </view>
+      <text class="popup-tz">{{tzLabel}}</text>
+    </view>
+    <!-- 弹窗详情网格 -->
+    <view class="popup-body">
+      <view class="popup-section">
+        <text class="section-label">📍 位置坐标</text>
+        <text class="section-value">{{popupPoint.latFmt}} / {{popupPoint.lngFmt}}</text>
+      </view>
+      <view class="popup-grid">
+        <view class="popup-cell">
+          <text class="cell-label">中心气压</text>
+          <text class="cell-value">{{popupPoint.pressure || '—'}}<text class="cell-unit">hPa</text></text>
+        </view>
+        <view class="popup-cell">
+          <text class="cell-label">最大风速</text>
+          <text class="cell-value">{{popupPoint.windSpeed || '—'}}<text class="cell-unit">m/s</text></text>
+        </view>
+      </view>
+      <view class="popup-grid">
+        <view class="popup-cell">
+          <text class="cell-label">移动方向</text>
+          <text class="cell-value">{{popupPoint.moveDir}}</text>
+        </view>
+        <view class="popup-cell">
+          <text class="cell-label">移动速度</text>
+          <text class="cell-value">{{popupPoint.moveSpeed || '—'}}<text class="cell-unit">km/h</text></text>
+        </view>
+      </view>
+      <view class="popup-hint" wx:if="{{!popupPoint.isForecast}}">
+        <text>点击路径上任意彩色圆点可查看该时刻详细数据</text>
+      </view>
+    </view>
+    <!-- 关闭按钮 -->
+    <view class="popup-close-btn" bindtap="onClosePopup">
+      <text>关闭</text>
+    </view>
+  </view>
+</view>

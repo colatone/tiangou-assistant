@@ -1,0 +1,13 @@
+<!-- components/custom-tabbar/custom-tabbar.wxml -->
+<view class="custom-tabbar">
+  <view
+    class="tab-item {{item.key === current ? 'active' : ''}}"
+    wx:for="{{tabs}}"
+    wx:key="key"
+    data-key="{{item.key}}"
+    bindtap="onTabTap"
+  >
+    <image class="tab-icon" src="{{item.key === current ? item.iconActive : item.icon}}" mode="aspectFit"></image>
+    <text class="tab-text {{item.key === current ? 'active' : ''}}">{{item.text}}</text>
+  </view>
+</view>

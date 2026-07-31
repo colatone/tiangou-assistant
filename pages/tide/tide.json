@@ -1,0 +1,1 @@
+{"navigationBarTitleText": "潮汐赶海", "enablePullDownRefresh": true, "usingComponents": {"tide-station-map": "../../components/tide-station-map/tide-station-map", "tide-detail": "../../components/tide-detail/tide-detail", "custom-tabbar": "../../components/custom-tabbar/custom-tabbar"}}

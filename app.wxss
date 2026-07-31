@@ -1,0 +1,106 @@
+/**app.wxss**/
+page {
+  --bg-primary: #FFF8F0;
+  --bg-white: #FFFFFF;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --color-primary: #FF8C69;
+  --color-primary-light: #FFD1B3;
+  --color-secondary: #6ECBF5;
+  --color-danger: #FF6B6B;
+  --color-success: #52C41A;
+  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-xl: 32rpx;
+
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.container {
+  padding: 24rpx;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF8C69, #FF6B6B);
+  color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 24rpx 48rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-secondary {
+  background: var(--bg-white);
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: 24rpx 48rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.btn-secondary::after {
+  border: none;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #FF8C69, #FF6B6B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 48rpx;
+  color: var(--text-tertiary);
+}
+
+.empty-state .icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.5;
+}
+
+.empty-state .text {
+  font-size: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-state .sub-text {
+  font-size: 26rpx;
+  margin-bottom: 48rpx;
+}

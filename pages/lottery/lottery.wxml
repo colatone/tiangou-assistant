@@ -1,0 +1,87 @@
+<!-- pages/lottery/lottery.wxml — 2阶段抽签页 -->
+<view class="page-lottery">
+
+  <!-- 奖项状态条 -->
+  <view class="prize-status" wx:if="{{prizeChips.length > 1}}">
+    <text class="ps-label">本轮奖项：</text>
+      <view wx:for="{{prizeChips}}" wx:key="id"
+            class="ps-chip {{item.disabled ? 'done' : ''}} {{item.id === currentPrizeId ? 'active' : ''}}">
+        <text class="ps-icon">{{item.icon}}</text>
+        <text class="ps-name">{{item.name}}</text>
+        <text class="ps-rem">×{{item.remaining}}</text>
+      </view>
+  </view>
+
+  <!-- 中央：画布 + 按钮 -->
+  <view class="stage">
+    <view class="canvas-card {{showResult ? 'is-hidden' : ''}}">
+      <lottery-wheel id="wheel" people="{{people}}"
+        width="{{wheelW}}" height="{{wheelH}}"
+        paused="{{showResult}}"
+        bind:stateChange="_onStateChange"
+        bind:drawEnd="_onDrawEnd"></lottery-wheel>
+    </view>
+
+    <!-- 2阶段按钮：开始抽签 / 抽取幸运儿 -->
+    <button class="draw-btn"
+            bindtap="onDraw">{{drawText}}</button>
+    <view class="gear-btn" bindtap="onManage">⚙</view>
+  </view>
+
+  <!-- 抽取结果弹窗 -->
+  <view class="result-mask" wx:if="{{showResult}}" bindtap="onCloseResult">
+    <view class="result-card" catchtap="noop">
+      <view class="res-prize-header" style="background:{{resultWinners[0].prizeColor}}10;border-color:{{resultWinners[0].prizeColor}}">
+        <text class="res-picon">{{resultWinners[0].prizeIcon}}</text>
+        <text class="res-pname" style="color:{{resultWinners[0].prizeColor}}">{{resultWinners[0].prizeName}}</text>
+      </view>
+
+      <view class="res-winners">
+        <block wx:for="{{resultWinners}}" wx:key="personName">
+          <view class="res-winner-item">
+            <view class="res-wdot" style="background:{{item.personColor}}"></view>
+            <text class="res-wname" style="color:{{item.personColor}}">{{item.personName}}</text>
+          </view>
+        </block>
+      </view>
+
+      <text class="res-hint">🎉 恭喜以上小伙伴</text>
+
+      <view class="res-btns">
+        <button class="btn-close" catchtap="onCloseResult">关闭</button>
+        <button class="btn-again" catchtap="onDrawAgain">再抽一次</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 抽签记录 -->
+  <view class="section-card record-card">
+    <view class="sec-head">
+      <text class="sec-title">抽签记录 ({{recordTotal}})</text>
+      <view class="sec-actions">
+        <text class="link" bindtap="onExportImage">分享</text>
+        <text class="link danger" bindtap="onReset">重置</text>
+      </view>
+    </view>
+    <block wx:if="{{recordList.length}}">
+      <view class="rec-item" wx:for="{{recordList}}" wx:key="id">
+        <text class="rec-icon">{{item.prizeIcon}}</text>
+        <view class="rec-body">
+          <text class="rec-name">{{item.personName}}</text>
+          <text class="rec-meta" style="color:{{item.prizeColor}}">{{item.prizeName}} · {{item.time || ''}}</text>
+        </view>
+      </view>
+      <view wx:if="{{recordHasMore}}" class="rec-more" bindtap="onLoadMore">加载更多</view>
+    </block>
+    <view wx:else class="empty-state">
+      <text class="empty-icon">🎰</text><text class="empty-text">还没有抽签记录</text>
+      <text class="empty-sub">点「开始抽签」试试吧</text>
+    </view>
+  </view>
+
+  <view class="tabbar-placeholder"></view>
+
+  <canvas type="2d" id="exportCanvas" class="export-canvas"></canvas>
+
+  <custom-tabbar current="lottery" />
+</view>

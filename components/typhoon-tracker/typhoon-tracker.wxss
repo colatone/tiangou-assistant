@@ -1,0 +1,432 @@
+/* components/typhoon-tracker/typhoon-tracker.wxss */
+.tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+/* ===== 地图 ===== */
+.map-wrap {
+  position: relative;
+  width: 100%;
+  height: 62vh;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  background: #EAF4FB;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-badge {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-primary);
+  font-size: 24rpx;
+  font-weight: 500;
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
+  box-shadow: var(--shadow-card);
+  pointer-events: none;
+}
+
+/* 定位按钮 */
+.locate-btn {
+  position: absolute;
+  right: 20rpx;
+  bottom: 20rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.locate-btn:active {
+  background: #F2F2F2;
+}
+.locate-icon {
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+/* 警戒线文字标注：原生 marker label（见 _warnLabelMarkers），锚点固定在线上、无边框 */
+
+/* ===== 图例 ===== */
+.legend-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}
+
+.legend-name {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+.legend-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16rpx 28rpx;
+}
+
+.legend-sep {
+  width: 1rpx;
+  height: 28rpx;
+  background: #ECECEC;
+  margin: 0 4rpx;
+}
+
+.path-item {
+  display: flex;
+  align-items: center;
+}
+
+.path-text {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  opacity: 0.85;
+}
+
+.line-real-sm {
+  width: 30rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: linear-gradient(90deg, #FF9800, #FF5722);
+  margin-right: 8rpx;
+}
+
+.line-forecast-sm {
+  width: 30rpx;
+  height: 0;
+  border-top: 4rpx dashed #6ECBF5;
+  margin-right: 8rpx;
+}
+
+/* ===== 当前点信息 ===== */
+.info-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.info-level {
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 6rpx 20rpx;
+  border-radius: 30rpx;
+}
+
+.info-tag {
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.info-tag.real {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.info-tag.forecast {
+  background: #E3F2FD;
+  color: #1565C0;
+}
+
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.info-cell {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16rpx;
+}
+
+.info-cell .label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 4rpx;
+}
+
+.info-cell .value {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.tz {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  margin-top: 2rpx;
+}
+
+/* ===== 时间轴 ===== */
+.timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.timeline-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.play-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF8C69, #FF6B6B);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
+}
+
+.play-btn:active {
+  opacity: 0.8;
+}
+
+.timeline-slider {
+  margin: 8rpx 8rpx 0;
+}
+
+.timeline-scale {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+/* ===== 点击详情弹窗（底部弹出） ===== */
+.popup-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 999;
+}
+
+.popup-sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 1000;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.popup-sheet.show {
+  transform: translateY(0);
+}
+
+/* 拖拽头 */
+.popup-handle-bar {
+  display: flex;
+  justify-content: center;
+  padding: 20rpx 0 12rpx;
+}
+
+.popup-handle {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: #E0E0E0;
+}
+
+/* 弹窗标题 */
+.popup-header {
+  padding: 0 32rpx 16rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.popup-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.popup-level-tag {
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
+
+.popup-time {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.popup-tz {
+  display: block;
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  margin-top: 6rpx;
+}
+
+.popup-type-tag {
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 14rpx;
+  flex-shrink: 0;
+}
+
+.popup-type-tag.real {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.popup-type-tag.forecast {
+  background: #E3F2FD;
+  color: #1565C0;
+}
+
+/* 弹窗内容 */
+.popup-body {
+  padding: 24rpx 32rpx;
+}
+
+.popup-section {
+  margin-bottom: 20rpx;
+}
+
+.section-label {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  display: block;
+  margin-bottom: 6rpx;
+}
+
+.section-value {
+  font-size: 30rpx;
+  color: var(--text-primary);
+  font-weight: 500;
+  letter-spacing: 1rpx;
+}
+
+.popup-grid {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.popup-cell {
+  flex: 1;
+  background: #FAFAFA;
+  border-radius: var(--radius-md);
+  padding: 20rpx 24rpx;
+}
+
+.cell-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  display: block;
+  margin-bottom: 6rpx;
+}
+
+.cell-value {
+  font-size: 34rpx;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.cell-unit {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  font-weight: normal;
+  margin-left: 4rpx;
+}
+
+.popup-hint {
+  text-align: center;
+  padding: 16rpx 0 8rpx;
+}
+
+.popup-hint text {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+/* 关闭按钮 */
+.popup-close-btn {
+  text-align: center;
+  padding: 20rpx 0 40rpx;
+  border-top: 1rpx solid #F5F5F5;
+}
+
+.popup-close-btn text {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* ===== 我的位置呼吸脉冲环（cover-view 覆盖在原生地图之上） ===== */
+.loc-pulse {
+  position: absolute;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+.loc-pulse-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-top: -22px;
+  border-radius: 50%;
+  border: 3px solid #1E88E5;
+  background: transparent;
+  box-sizing: border-box;
+  transform: scale(0.3);
+  opacity: 0.8;
+  animation: locBreath 2s ease-out infinite;
+}
+.loc-pulse-ring.r2 {
+  animation-delay: 1s;
+}
+@keyframes locBreath {
+  0% { transform: scale(0.3); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}

@@ -1,0 +1,23 @@
+<!-- pages/others/others.wxml -->
+<view class="center">
+  <view class="hero">
+    <view class="hero-name">{{appName}}</view>
+    <view class="hero-sub">实用工具箱 · 让每一次打开都有用</view>
+  </view>
+
+  <view class="grid">
+    <view
+      wx:for="{{tools}}"
+      wx:key="id"
+      class="tool-card {{item.ready ? '' : 'disabled'}}"
+      bindtap="onTapTool"
+      data-item="{{item}}"
+    >
+      <view class="tool-icon">{{item.icon}}</view>
+      <view class="tool-name">{{item.name}}</view>
+      <view class="tool-desc">{{item.desc}}</view>
+      <view class="tool-badge" wx:if="{{!item.ready}}">敬请期待</view>
+      <view class="tool-arrow" wx:else>›</view>
+    </view>
+  </view>
+</view>

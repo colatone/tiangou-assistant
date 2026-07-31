@@ -1,0 +1,140 @@
+<view class="container">
+  <!-- 每日语录 -->
+  <view class="quote-card" wx:if="{{quote}}">
+    <view class="quote-icon">✨</view>
+    <text class="quote-text">{{quote}}</text>
+  </view>
+
+  <!-- 筛选和排序 -->
+  <view class="filter-bar">
+    <scroll-view class="category-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="category-list">
+        <view
+          class="category-tag {{activeCategory === '' ? 'active' : ''}}"
+          bindtap="onCategoryFilter"
+          data-id=""
+        >
+          全部
+        </view>
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="category-tag {{activeCategory === item.id ? 'active' : ''}}"
+          style="{{activeCategory === item.id ? 'background:' + item.color + '20; color:' + item.color + '; border-color:' + item.color : ''}}"
+          bindtap="onCategoryFilter"
+          data-id="{{item.id}}"
+        >
+          {{item.icon}} {{item.name}}
+        </view>
+      </view>
+    </scroll-view>
+    <view class="sort-btn" bindtap="onSortToggle">
+      <text>{{sortLabel}}</text>
+      <text class="sort-arrow">{{sortOrder === 'asc' ? '↑' : '↓'}}</text>
+    </view>
+  </view>
+
+  <!-- 事件列表 -->
+  <view class="event-list" wx:if="{{events.length > 0}}">
+    <view
+      wx:for="{{events}}"
+      wx:key="id"
+      class="event-card {{item.type}}"
+      bindtap="onEditEvent"
+      data-id="{{item.id}}"
+    >
+      <view class="card-header">
+        <view class="event-name">{{item.name}}</view>
+        <view class="category-badge" style="background: {{item.categoryColor}}20; color: {{item.categoryColor}}">
+          {{item.categoryIcon}} {{item.categoryName}}
+        </view>
+      </view>
+
+      <view class="card-body">
+        <!-- 正计时：大字天数 -->
+        <view class="days-number elapsed-display" wx:if="{{item.type === 'elapsed'}}">
+          <text class="number text-gradient">{{item.days}}</text>
+          <text class="unit">天</text>
+        </view>
+
+        <!-- 倒计时：详细倒计时 -->
+        <view class="countdown-display" wx:if="{{item.type === 'countdown'}}">
+          <view class="countdown-main">
+            <block wx:if="{{!item.countdownDetail.isExpired && item.days > 0}}">
+              <!-- 天数 -->
+              <view class="time-block">
+                <text class="time-value">{{item.countdownDetail.days || item.days}}</text>
+                <text class="time-unit">天</text>
+              </view>
+              <!-- 时分秒（当天数较少时显示） -->
+              <view class="time-sep" wx:if="{{(item.countdownDetail.days || item.days) < 30}}">:</view>
+              <view class="time-block small" wx:if="{{(item.countdownDetail.days || item.days) < 30}}">
+                <text class="time-value">{{item.countdownDetail.hours}}</text>
+                <text class="time-unit">时</text>
+              </view>
+              <view class="time-sep" wx:if="{{(item.countdownDetail.days || item.days) < 30}}">:</view>
+              <view class="time-block small" wx:if="{{(item.countdownDetail.days || item.days) < 30}}">
+                <text class="time-value">{{item.countdownDetail.minutes}}</text>
+                <text class="time-unit">分</text>
+              </view>
+              <view class="time-sep" wx:if="{{(item.countdownDetail.days || item.days) < 1}}">:</view>
+              <view class="time-block small" wx:if="{{(item.countdownDetail.days || item.days) < 1}}">
+                <text class="time-value">{{item.countdownDetail.seconds}}</text>
+                <text class="time-unit">秒</text>
+              </view>
+            </block>
+            <!-- 已过期 -->
+            <view class="expired-badge" wx:else>
+              <text>已到达目标日 🎉</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 日期信息（含农历） -->
+        <view class="date-info">
+          <text class="date-label">{{item.type === 'elapsed' ? '始于' : '目标'}}</text>
+          <text class="date-value">{{item.formattedDate}}</text>
+          <!-- 农历日期展示 -->
+          <view class="lunar-tag" wx:if="{{item.lunarShort}}">
+            <text>{{item.lunarShort}}</text>
+          </view>
+          <view class="highlight-tag-mini" wx:if="{{item.highlightTag}}">
+            <text>{{item.highlightTag}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 提醒状态标记 -->
+      <view class="reminder-mark" wx:if="{{item.remindEnabled && item.type === 'countdown'}}">
+        <text>🔔 提前{{item.remindBeforeDays}}天提醒</text>
+      </view>
+
+      <view class="card-footer">
+        <view class="note" wx:if="{{item.note}}">{{item.note}}</view>
+        <view class="actions">
+          <view class="action-btn share" catchtap="onShareEvent" data-id="{{item.id}}">
+            <text>📤</text>
+          </view>
+          <view class="action-btn delete" catchtap="onDeleteEvent" data-id="{{item.id}}">
+            <text>🗑️</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{events.length === 0}}">
+    <text class="icon">🌸</text>
+    <text class="text">还没有记录任何时光</text>
+    <text class="sub-text">点击右下角按钮，记录属于你的重要时刻</text>
+    <view class="restore-btn" bindtap="onRestoreSample">
+      <text>↺ 恢复示例记录</text>
+    </view>
+  </view>
+
+  <!-- 浮动添加按钮 -->
+  <view class="float-btn" bindtap="onAddEvent">
+    <text class="float-icon">+</text>
+  </view>
+</view>

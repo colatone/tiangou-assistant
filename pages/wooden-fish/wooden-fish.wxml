@@ -1,0 +1,68 @@
+<!-- pages/wooden-fish/wooden-fish.wxml -->
+<view class="page">
+  <!-- 财运 -->
+  <view class="top-area">
+    <text class="merit-num">{{merit}}</text>
+    <text class="top-label">积累财运</text>
+  </view>
+
+  <!-- 统计 -->
+  <view class="stat-bar">
+    <text class="st-text">今日 {{todayCount}} 次</text>
+    <view class="st-line"></view>
+    <text class="st-text">连续 {{streakDays}} 天</text>
+  </view>
+
+  <!-- 每日一签横幅（常驻）-->
+  <view class="fortune-banner {{fortuneUnlocked ? 'on' : ''}}">
+    <block wx:if="{{fortuneUnlocked}}">
+      <text class="fb-tag">今日签</text>
+      <text class="fb-quote">{{fortuneQuote}}</text>
+    </block>
+    <block wx:else>
+      <text class="fb-tip">再敲 {{fortuneRemain}} 下解锁今日运势</text>
+    </block>
+  </view>
+
+  <!-- ★ +1 飘字层（DOM 元素·放射扇形，飞到运势横幅区域停住淡出）★ -->
+  <view class="float-layer">
+    <view
+      wx:for="{{floatList}}"
+      wx:key="id"
+      class="float-item"
+      style="--end-x: {{item.endX}}rpx; --end-y: {{item.endY}}rpx; animation: floatFan {{item.duration}}ms ease-out forwards;"
+    >+1</view>
+  </view>
+
+  <!-- 中央舞台：canvas绘制木鱼（大尺寸确保完整） -->
+  <view class="stage" bindtap="onTapFish">
+    <!-- 木鱼画布（敲击波纹在 canvas 内绘制；+1 已改为 DOM 方式） -->
+    <canvas type="2d" id="fishCVS"
+             class="fish-canvas" />
+  </view>
+
+  <text class="hint">{{autoRunning ? '自动修行中…' : '敲击木鱼'}}</text>
+
+  <!-- 右侧控制栏 -->
+  <view class="ctrl-bar">
+    <view class="c-btn" bindtap="toggleAuto"><text>{{autoRunning ? '⏹' : '▶'}}</text></view>
+    <view class="c-btn" bindtap="toggleStick"><text>{{showStick ? '👁' : '🙈'}}</text></view>
+    <view class="c-btn" bindtap="toggleNoise"><text>{{noiseState === 'off' ? '🔇' : (noiseState === 'rain' ? '🌧️' : '🌬️')}}</text></view>
+    <view class="c-btn" bindtap="onMore"><text>⋮</text></view>
+    <!-- 音量滑杆（3档·小/中/大·1.5s无操作自动收起）-->
+    <view wx:if="{{showNoiseVol}}" class="noise-vol">
+      <text class="as-label">{{noiseVolText}}</text>
+      <slider min="0" max="2" step="1" value="{{noiseVolLevel}}" bindchanging="onNoiseVol" bindchange="onNoiseVol" activeColor="#FF8C69"/>
+    </view>
+    <!-- 自动速度滑杆（3档·慢/中/快·3s无操作自动收起）-->
+    <view wx:if="{{showAutoSpeedSlider}}" class="auto-speed-vol">
+      <text class="as-label">{{autoSpeedText}}</text>
+      <slider min="0" max="2" step="1" value="{{autoSpeedLevel}}" bindchanging="onAutoSpeed" bindchange="onAutoSpeed" activeColor="#FF8C69"/>
+    </view>
+  </view>
+
+  <!-- 分享画布（隐藏，用于生成卡片）-->
+  <canvas type="2d" id="shareCVS" class="share-cvs"></canvas>
+
+  <custom-tabbar current="tools" />
+</view>

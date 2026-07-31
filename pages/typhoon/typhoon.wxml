@@ -1,0 +1,38 @@
+<!-- pages/typhoon/typhoon.wxml -->
+<view class="container">
+  <!-- 风暴切换（多风暴时） -->
+  <scroll-view wx:if="{{storms.length > 1 && !loading && !error}}" class="storm-scroll" scroll-x="true" show-scrollbar="false">
+    <view class="storm-list">
+      <view
+        wx:for="{{storms}}"
+        wx:key="id"
+        class="storm-tag {{activeStormId === item.id ? 'active' : ''}}"
+        bindtap="onSelectStorm"
+        data-id="{{item.id}}"
+      >🌀 {{item.name}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 加载态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="spinner"></view>
+    <text class="loading-text">加载中…</text>
+  </view>
+
+  <!-- 空 / 错误态 -->
+  <view class="empty-state" wx:elif="{{error}}">
+    <text class="icon">🌀</text>
+    <text class="text">{{error}}</text>
+    <view class="btn-secondary" bindtap="loadStorms">重试</view>
+  </view>
+
+  <!-- 台风追踪 -->
+  <block wx:else>
+    <view class="update-bar" wx:if="{{lastUpdated}}">更新于 {{lastUpdated}} · 下拉可刷新</view>
+    <typhoon-tracker
+      points="{{trackPoints}}"
+      storm-name="{{activeStormName}}"
+    />
+    <view class="mock-tip" wx:if="{{usingMock}}">⚠️ 数据加载失败，当前展示示例数据</view>
+  </block>
+</view>

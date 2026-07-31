@@ -1,0 +1,82 @@
+/* pages/others/others.wxss */
+.center {
+  min-height: 100vh;
+  padding: 32rpx;
+  box-sizing: border-box;
+  background: #FFF8F0;
+}
+
+.hero {
+  padding: 24rpx 8rpx 40rpx;
+}
+
+.hero-name {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hero-sub {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+}
+
+.tool-card {
+  position: relative;
+  width: calc((100% - 24rpx) / 2);
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 32rpx 28rpx;
+  overflow: hidden;
+}
+
+.tool-card.disabled {
+  opacity: 0.55;
+}
+
+.tool-icon {
+  font-size: 56rpx;
+  margin-bottom: 16rpx;
+}
+
+.tool-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.tool-desc {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+.tool-badge {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  font-size: 18rpx;
+  color: #FFFFFF;
+  background: var(--text-tertiary);
+  padding: 2rpx 12rpx;
+  border-radius: 20rpx;
+}
+
+.tool-arrow {
+  position: absolute;
+  top: 16rpx;
+  right: 24rpx;
+  font-size: 40rpx;
+  color: var(--color-primary);
+  line-height: 1;
+}

@@ -1,0 +1,158 @@
+<view class="container">
+  <view class="form-card">
+    <!-- 事件名称 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="label-text">事件名称</text>
+        <text class="required">*</text>
+      </view>
+      <input
+        class="form-input"
+        placeholder="例如：你来世界已经"
+        value="{{form.name}}"
+        bindinput="onNameInput"
+        maxlength="50"
+      />
+    </view>
+
+    <!-- 日期（含农历显示） -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="label-text">日期</text>
+        <text class="required">*</text>
+      </view>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="date-picker-wrapper">
+          <view class="picker-value {{form.date ? '' : 'placeholder'}}">
+            {{form.date ? formattedDate : '请选择日期'}}
+          </view>
+          <!-- 农历信息展示区 -->
+          <view class="lunar-display" wx:if="{{lunarInfo}}">
+            <view class="lunar-main">
+              <text class="lunar-animal">{{lunarInfo.animalEmoji}}</text>
+              <text class="lunar-date-text">{{lunarShort}}</text>
+              <view class="highlight-tag {{lunarInfo.highlightTag ? '' : 'hidden'}}"
+                    wx:if="{{highlightTag}}">
+                <text>{{highlightTag}}</text>
+              </view>
+            </view>
+            <view class="lunar-detail" wx:if="{{lunarInfo.tags.length > 0}}">
+              <block wx:for="{{lunarInfo.tags}}" wx:key="index">
+                <text class="tag-item tag-{{item.type}}">{{item.text}}</text>
+              </block>
+            </view>
+            <view class="lunar-ganzhi" wx:if="{{lunarInfo.yearGanZhi}}">
+              <text>{{lunarInfo.yearGanZhi}}年 · 农历{{lunarInfo.lunarYear}}年</text>
+            </view>
+          </view>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 类型 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="label-text">计算模式</text>
+      </view>
+      <view class="type-selector">
+        <view
+          class="type-option {{form.type === 'elapsed' ? 'active' : ''}}"
+          bindtap="onTypeChange"
+          data-type="elapsed"
+        >
+          <text class="type-icon">📅</text>
+          <text class="type-text">正计时</text>
+          <text class="type-desc">已过去多少天</text>
+        </view>
+        <view
+          class="type-option {{form.type === 'countdown' ? 'active' : ''}}"
+          bindtap="onTypeChange"
+          data-type="countdown"
+        >
+          <text class="type-icon">⏰</text>
+          <text class="type-text">倒计时</text>
+          <text class="type-desc">还剩多少天</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 倒计时提醒设置（仅倒计时模式显示） -->
+    <view class="form-group" wx:if="{{form.type === 'countdown'}}">
+      <view class="form-label">
+        <text class="label-text">提醒设置</text>
+      </view>
+      <view class="reminder-setting">
+        <view class="reminder-header" bindtap="onRemindToggle">
+          <view class="reminder-switch {{form.remindEnabled ? 'active' : ''}}">
+            <view class="switch-dot"></view>
+          </view>
+          <text class="reminder-title">开启提醒通知</text>
+        </view>
+        <view class="reminder-days" wx:if="{{form.remindEnabled}}">
+          <text class="reminder-hint">提前多少天提醒：</text>
+          <scroll-view scroll-x="true" show-scrollbar="false" class="days-scroll">
+            <view class="days-list">
+              <view
+                wx:for="{{remindOptions}}"
+                wx:key="*this"
+                class="day-chip {{form.remindBeforeDays === item ? 'active' : ''}}"
+                data-days="{{item}}"
+                catchtap="onRemindDaysChange"
+              >
+                <text>前{{item}}天</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+        <view class="reminder-note" wx:if="{{form.remindEnabled}}">
+          <text class="note-icon">💡</text>
+          <text class="note-text">将在目标日期前{{form.remindBeforeDays}}天推送提醒通知，打开小程序时生效</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分类 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="label-text">分类</text>
+        <view class="manage-link" bindtap="onManageCategory">
+          <text>管理分类</text>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+      <view class="category-grid">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="category-item {{form.category === item.id ? 'active' : ''}}"
+          style="{{form.category === item.id ? 'background:' + item.color + '20; border-color:' + item.color + '; color:' + item.color : ''}}"
+          bindtap="onCategorySelect"
+          data-id="{{item.id}}"
+        >
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="label-text">备注</text>
+      </view>
+      <textarea
+        class="form-textarea"
+        placeholder="写点什么...（可选）"
+        value="{{form.note}}"
+        bindinput="onNoteInput"
+        maxlength="200"
+      />
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="btn-group">
+    <button class="btn-primary save-btn" bindtap="onSave">{{isEdit ? '保存修改' : '创建记录'}}</button>
+    <button class="btn-secondary cancel-btn" bindtap="onCancel" wx:if="{{isEdit}}">取消</button>
+  </view>
+</view>

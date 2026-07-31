@@ -1,0 +1,37 @@
+<!-- pages/wooden-fish/history.wxml — 独立历史战绩页 -->
+<view class="page">
+  <!-- 汇总卡片 -->
+  <view class="summary-card">
+    <view class="sc-title">📊 近30天战绩</view>
+    <view class="sc-row">
+      <view class="sc-stat">
+        <text class="sc-num">{{totalDays}}</text>
+        <text class="sc-label">活跃天数</text>
+      </view>
+      <view class="sc-line"></view>
+      <view class="sc-stat">
+        <text class="sc-num">{{totalHits}}</text>
+        <text class="sc-label">总敲击</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <scroll-view scroll-y class="list-wrap" enhanced show-scrollbar="{{false}}">
+    <view wx:for="{{historyList}}" wx:key="date"
+          class="row {{item.hits > 0 ? 'has-data' : ''}} {{item.isToday ? 'today' : ''}}">
+      <view class="row-left">
+        <text class="row-date">{{item.label}}</text>
+        <text class="row-wd">周{{item.weekday}}</text>
+        <text wx:if="{{item.isToday}}" class="row-tag">今天</text>
+      </view>
+      <view class="row-right">
+        <text wx:if="{{item.hits > 0}}" class="row-hits">{{item.hits}} 次</text>
+        <text wx:else class="row-none">—</text>
+      </view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view class="bottom-pad"></view>
+  </scroll-view>
+</view>

@@ -1,0 +1,211 @@
+/* ═══ 赛博木鱼 — V18 木鱼.png造型 + DOM飞字 + 朋友圈分享 ═══ */
+
+.page {
+  height: 100vh;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16rpx;
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── 财运数字（紧凑） ── */
+.top-area {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  margin-top: 30rpx;
+  margin-bottom: 6rpx;
+}
+.merit-num {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #333333;
+  line-height: 1;
+}
+.top-label {
+  font-size: 20rpx;
+  color: #AAAAAA;
+  letter-spacing: 3px;
+}
+
+/* ── 统计条（紧凑） ── */
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 8rpx 28rpx;
+  background: #F8F6F2;
+  border-radius: 30rpx;
+  margin-bottom: 12rpx;
+}
+.st-text { font-size: 20rpx; color: #888888; }
+.st-line { width: 1rpx; height: 24rpx; background: #DDDDDD; }
+
+/* ── 每日一签横幅 ── */
+.fortune-banner {
+  width: 88%;
+  margin: 4rpx 0 10rpx;
+  padding: 14rpx 22rpx;
+  box-sizing: border-box;
+  background: #F8F6F2;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.fortune-banner.on {
+  background: linear-gradient(135deg, #FFF3E6, #FFE6D6);
+  border: 1rpx solid #FFD9BF;
+}
+.fb-tag {
+  font-size: 20rpx;
+  color: #fff;
+  background: #FF8C69;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
+.fb-quote {
+  font-size: 24rpx;
+  color: #8A5A3A;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fb-tip { font-size: 22rpx; color: #B0A89E; }
+
+/* ── ★ +1 飘字层（DOM 元素·放射扇形，覆盖到运势横幅区域）★ ── */
+.float-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 300rpx;           /* ★ 下移到木鱼canvas所在区域 */
+  height: 420rpx;       /* 覆盖木鱼→运势横幅 */
+  pointer-events: none;
+  z-index: 60;
+  overflow: visible;
+}
+.float-item {
+  position: absolute;
+  left: 50%;
+  bottom: 100rpx;       /* ★ 起点：木鱼敲击点/鱼顶附近（红圈位置）*/
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #FF8C69;
+  opacity: 0;
+  transform: translateX(-50%);
+  /* --end-x / --end-y 由 JS 内联 style 注入，每片+1 扇形方向不同 */
+}
+
+/* ── +1 放射扇形动画：从敲击点沿扇形方向飞到运势横幅→停住淡出 ── */
+@keyframes floatFan {
+  0%   { opacity: 1; transform: translateX(-50%) translate(0, 0); }
+  60%  { opacity: 0.9; transform: translateX(-50%) translate(var(--end-x), calc(var(--end-y) * 0.6)); }
+  85%  { opacity: 0.4; transform: translateX(-50%) translate(var(--end-x), var(--end-y)); }
+  100% { opacity: 0; transform: translateX(-50%) translate(var(--end-x), var(--end-y)); }  /* ★ 停在这里淡出，不再往上飞 */
+}
+
+/* ── 中央舞台（占满剩余空间但不溢出）── */
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 480rpx;
+  min-height: 0;
+}
+
+/* 木鱼canvas —— 紧凑尺寸一屏内显示 */
+.fish-canvas {
+  width: 440rpx;
+  height: 340rpx;
+  z-index: 2;
+}
+
+.hint {
+  margin-top: 8rpx;
+  margin-bottom: 4rpx;
+  font-size: 20rpx;
+  color: #BBBBBB;
+  letter-spacing: 2px;
+}
+
+/* ── 控制栏 ── */
+.ctrl-bar {
+  position: fixed;
+  right: 14rpx;
+  top: 220rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  z-index: 50;
+}
+.c-btn {
+  width: 70rpx;
+  height: 70rpx;
+  background: #F5F3EF;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.c-btn:active { transform: scale(0.9); }
+.c-btn text {
+  font-size: 26rpx;
+  color: #666666 !important;
+  -webkit-text-fill-color: #666666;
+  filter: grayscale(100%);
+}
+
+/* ── 白噪音音量滑杆（3档·调完1.5s自动收起）── */
+.noise-vol {
+  width: 180rpx;
+  background: #F5F3EF;
+  border-radius: 16rpx;
+  padding: 8rpx 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  animation: volIn 0.2s ease-out;
+}
+.noise-vol slider { margin: 0; flex: 1; }
+
+/* ── 自动速度滑杆（调完3s自动收起）── */
+.auto-speed-vol {
+  width: 180rpx;
+  background: #F5F3EF;
+  border-radius: 16rpx;
+  padding: 8rpx 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  animation: volIn 0.2s ease-out;
+}
+.auto-speed-vol slider { margin: 0; flex: 1; }
+.as-label {
+  font-size: 20rpx;
+  color: #999999;
+  min-width: 56rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+@keyframes volIn {
+  from { opacity: 0; transform: translateY(-8rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 分享画布（与时光计算器同规格 640×1080 竖长卡片）── */
+.share-cvs {
+  position: fixed; left: -9999rpx; top: -9999rpx;
+  width: 640rpx; height: 1080rpx;
+}

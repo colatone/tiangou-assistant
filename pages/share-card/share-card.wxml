@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="preview-area">
+    <view class="loading-tip" wx:if="{{!cardReady}}">
+      <text>正在生成分享卡片...</text>
+    </view>
+    <canvas type="2d" id="shareCanvas" class="share-canvas"></canvas>
+  </view>
+
+  <view class="action-bar" wx:if="{{cardReady}}">
+    <button class="btn-primary" bindtap="onSaveToAlbum">
+      <text>💾 保存到相册</text>
+    </button>
+    <button class="btn-secondary" open-type="share">
+      <text>📤 分享给好友</text>
+    </button>
+  </view>
+</view>

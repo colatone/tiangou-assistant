@@ -1,0 +1,62 @@
+{
+  "pages": [
+    "pages/others/others",
+    "pages/typhoon/typhoon",
+    "pages/index/index",
+    "pages/add-event/add-event",
+    "pages/share-card/share-card",
+    "pages/category/category",
+    "pages/tide/tide",
+    "pages/lottery/lottery",
+    "pages/lottery-edit/lottery-edit",
+    "pages/wooden-fish/wooden-fish",
+    "pages/wooden-fish/history",
+    "pages/dragonball/dragonball"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFF8F0",
+    "navigationBarTitleText": "舔狗助手",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF8F0"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF8C69",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/others/others",
+        "text": "工具",
+        "iconPath": "images/tab_more.png",
+        "selectedIconPath": "images/tab_more_active.png"
+      },
+      {
+        "pagePath": "pages/typhoon/typhoon",
+        "text": "台风",
+        "iconPath": "images/tab_typhoon.png",
+        "selectedIconPath": "images/tab_typhoon_active.png"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "时光",
+        "iconPath": "images/tab_time.png",
+        "selectedIconPath": "images/tab_time_active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "在台风地图上显示您的位置，以及查询附近潮汐站与赶海时间"
+    },
+    "scope.writePhotosAlbum": {
+      "desc": "保存你的分享图到相册"
+    }
+  },
+  "lazyCodeLoading": "requiredComponents"
+}

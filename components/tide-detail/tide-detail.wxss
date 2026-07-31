@@ -1,0 +1,316 @@
+/* components/tide-detail/tide-detail.wxss */
+
+.tide-detail {
+  padding: 0 24rpx;
+}
+
+/* mock 提示 */
+.mock-hint {
+  text-align: center;
+  font-size: 22rpx;
+  color: #FF9800;
+  padding: 12rpx 0 8rpx;
+}
+
+/* 卡片通用 */
+.card {
+  background: #FFFFFF;
+  border-radius: var(--radius-md, 16rpx);
+  box-shadow: var(--shadow-card, 0 4rpx 16rpx rgba(0,0,0,0.06));
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  margin-bottom: 20rpx;
+}
+
+/* ===== 潮高曲线（纯 CSS 柱状图） ===== */
+.curve-card {
+  padding-bottom: 20rpx;
+}
+
+.curve-container {
+  width: 100%;
+}
+
+.curve-chart {
+  position: relative;
+  height: 300rpx;
+  background: #FAFAF8;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+/* 背景网格线 */
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #F0E8E0;
+}
+.grid-top { top: 10%; }
+.grid-mid { top: 50%; }
+.grid-bottom { top: 90%; }
+
+/* 柱状图条 */
+.curve-bars {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  padding: 0 4rpx;
+  gap: 2rpx;
+}
+
+.curve-bar-wrap {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+/* 适合赶海时间的柱子顶部小螃蟹标记（emoji，贴合赶海主题，完全位于柱顶上方，不叠加） */
+.bar-check {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 4rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20rpx;
+  line-height: 1;
+  text-shadow: 0 0 3rpx #fff, 0 1rpx 2rpx rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.curve-bar {
+  position: relative;
+  width: 100%;
+  min-height: 4rpx;
+  background: linear-gradient(180deg, #4A90D9 0%, #6EB5EF 100%);
+  border-radius: 2rpx 2rpx 0 0;
+  transition: height 0.3s ease;
+}
+
+.bar-high {
+  background: linear-gradient(180deg, #E53935 0%, #FF8A80 100%);
+}
+
+.bar-low {
+  background: linear-gradient(180deg, #1976D2 0%, #64B5F6 100%);
+}
+
+/* 高低潮标记点（覆盖在柱状图上方） */
+.curve-marks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.curve-dot-mark {
+  position: absolute;
+  transform: translate(-50%, 50%);
+}
+
+.curve-label-mark {
+  position: absolute;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.mark-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3rpx rgba(255, 255, 255, 0.85);
+}
+
+.mark-high .mark-dot { background: #E53935; }
+.mark-low .mark-dot { background: #1976D2; }
+
+.mark-label {
+  font-size: 18rpx;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 2rpx 8rpx;
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.mark-high .mark-label { color: #E53935; }
+.mark-low .mark-label { color: #1976D2; }
+
+/* X 轴时间标签 */
+.curve-x-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 8rpx 8rpx 0;
+}
+
+.x-label {
+  font-size: 18rpx;
+  color: var(--text-tertiary, #999);
+}
+
+/* 图例 */
+.curve-legend {
+  display: flex;
+  gap: 32rpx;
+  justify-content: center;
+  padding-top: 16rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 20rpx;
+  color: var(--text-secondary, #666);
+}
+
+.dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+}
+.dot-high { background: #E53935; }
+.dot-low { background: #1976D2; }
+
+/* ===== 涨退潮表 ===== */
+.phase-list { }
+
+.phase-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+.phase-row:last-child {
+  border-bottom: none;
+}
+
+.phase-icon {
+  font-size: 32rpx;
+  width: 48rpx;
+  text-align: center;
+}
+
+.phase-type {
+  font-size: 26rpx;
+  color: var(--text-primary, #333);
+  font-weight: 600;
+  width: 80rpx;
+}
+
+.phase-time {
+  font-size: 26rpx;
+  color: var(--text-secondary, #666);
+  flex: 1;
+}
+
+.phase-range {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #999);
+}
+
+.row-flood .phase-type { color: #1976D2; }
+.row-ebb .phase-type { color: #E53935; }
+
+.empty-tip {
+  text-align: center;
+  color: var(--text-tertiary, #999);
+  font-size: 24rpx;
+  padding: 24rpx 0;
+}
+
+/* ===== 推荐赶海卡片 ===== */
+.recommend-card {
+  border-left: 8rpx solid #FF6B4A;
+}
+
+.recommend-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.recommend-icon {
+  font-size: 36rpx;
+  color: #FF6B4A;
+}
+
+.recommend-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #FF6B4A;
+}
+
+.recommend-body { }
+
+.rec-item {
+  padding: 16rpx 0;
+  border-top: 1rpx dashed rgba(255, 107, 74, 0.25);
+}
+.rec-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.rec-main {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 6rpx;
+}
+
+.rec-time {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary, #333);
+}
+
+.rec-score {
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+}
+.score-excellent { background: #E8F5E9; color: #2E7D32; }
+.score-good { background: #FFF3E0; color: #EF6C00; }
+.score-normal { background: #FFF8E1; color: #F9A825; }
+
+.rec-level {
+  font-size: 22rpx;
+  padding: 2rpx 14rpx;
+  border-radius: 10rpx;
+  color: #FFFFFF !important;
+}
+.level-excellent { background: #FF6B4A; }
+.level-good { background: #FFB74D; }
+.level-normal { background: #BDBDBD; }
+
+.rec-sub {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #999);
+  line-height: 1.4;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 120rpx 0;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: var(--text-tertiary, #999);
+}

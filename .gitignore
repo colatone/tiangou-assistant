@@ -1,0 +1,17 @@
+# WorkBuddy 私有记忆（含对话/项目笔记，勿上传）
+.workbuddy/
+
+# 微信开发者工具私有配置（含本地 appid 与设置）
+project.private.config.json
+
+# 系统垃圾文件（Windows 残留空文件）
+nul
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+*.log
+
+# 微信 npm 构建产物（如使用 npm 构建会生成）
+miniprogram_npm/
+node_modules/

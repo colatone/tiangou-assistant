@@ -1,0 +1,70 @@
+<view class="container">
+  <!-- 预设分类 -->
+  <view class="section-title">预设分类</view>
+  <view class="category-card">
+    <view wx:for="{{presetCategories}}" wx:key="id" class="category-row">
+      <view class="category-info">
+        <text class="category-icon" style="background: {{item.color}}20; color: {{item.color}}">{{item.icon}}</text>
+        <text class="category-name">{{item.name}}</text>
+      </view>
+      <text class="preset-tag">预设</text>
+    </view>
+  </view>
+
+  <!-- 自定义分类 -->
+  <view class="section-title">
+    <text>自定义分类</text>
+    <text class="count" wx:if="{{customCategories.length > 0}}">({{customCategories.length}})</text>
+  </view>
+  
+  <view class="category-card" wx:if="{{customCategories.length > 0}}">
+    <view wx:for="{{customCategories}}" wx:key="id" class="category-row">
+      <view class="category-info">
+        <text class="category-icon" style="background: {{item.color}}20; color: {{item.color}}">{{item.icon}}</text>
+        <text class="category-name">{{item.name}}</text>
+      </view>
+      <view class="delete-btn" bindtap="onDeleteCategory" data-id="{{item.id}}">
+        <text>🗑️</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-hint" wx:if="{{customCategories.length === 0}}">
+    <text>还没有自定义分类，点击下方按钮添加</text>
+  </view>
+
+  <!-- 添加分类 -->
+  <view class="add-section" wx:if="{{showAddForm}}">
+    <view class="form-card">
+      <view class="form-group">
+        <view class="form-label">分类名称</view>
+        <input class="form-input" placeholder="例如：宠物" value="{{newCategory.name}}" bindinput="onNewNameInput" maxlength="10"/>
+      </view>
+      <view class="form-group">
+        <view class="form-label">选择图标</view>
+        <view class="icon-grid">
+          <view wx:for="{{iconOptions}}" wx:key="*this" class="icon-item {{newCategory.icon === item ? 'active' : ''}}" bindtap="onIconSelect" data-icon="{{item}}">
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="form-group">
+        <view class="form-label">选择颜色</view>
+        <view class="color-grid">
+          <view wx:for="{{colorOptions}}" wx:key="*this" class="color-item {{newCategory.color === item ? 'active' : ''}}" style="background: {{item}}" bindtap="onColorSelect" data-color="{{item}}">
+            <text wx:if="{{newCategory.color === item}}">✓</text>
+          </view>
+        </view>
+      </view>
+      <view class="form-actions">
+        <button class="btn-primary" bindtap="onConfirmAdd">确认添加</button>
+        <button class="btn-secondary" bindtap="onCancelAdd">取消</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="float-btn" bindtap="onShowAddForm" wx:if="{{!showAddForm}}">
+    <text class="float-icon">+</text>
+  </view>
+</view>

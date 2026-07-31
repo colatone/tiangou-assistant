@@ -1,0 +1,67 @@
+<!-- pages/tide/tide.wxml -->
+<view class="page-tide">
+
+  <!-- 紧凑头部：站点名 + 距离 + 视图切换 + 日期选择 合为一体 -->
+  <view class="tide-header-card">
+    <view class="header-top">
+      <view class="station-row">
+        <text class="station-name">{{stationName || '潮汐赶海'}}</text>
+        <text class="dist-badge" wx:if="{{distanceKm > 0}}">{{distanceKm}}km</text>
+      </view>
+      <view class="view-switch">
+        <text class="switch-btn {{viewMode === 'detail' ? 'active' : ''}}" bindtap="switchToDetail">详情</text>
+        <text class="switch-btn {{viewMode === 'map' ? 'active' : ''}}" bindtap="switchToMap">切换港口</text>
+      </view>
+    </view>
+    <scroll-view class="date-bar" scroll-x enable-flex>
+      <view
+        class="date-item {{item.value === currentDate ? 'active' : ''}}"
+        wx:for="{{dateOptions}}"
+        wx:key="value"
+        data-idx="{{index}}"
+        bindtap="onSelectDate"
+      >
+        <text class="date-weekday">{{item.weekday}}</text>
+        <text class="date-day">{{item.label}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 详情视图（不含重复的站点名栏） -->
+  <tide-detail
+    wx:if="{{viewMode === 'detail'}}"
+    data="{{tideData}}"
+    user-location="{{userLocation}}"
+  />
+
+  <!-- 地图视图（高度由组件内自行计算，原生 map 不支持 flex） -->
+  <tide-station-map
+    wx:if="{{viewMode === 'map'}}"
+    active-station-id="{{stationId}}"
+    user-location="{{userLocation}}"
+    bindstationselect="onStationSelect"
+  />
+
+  <!-- 加载状态 -->
+  <view class="loading-mask" wx:if="{{loading && !tideData}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-hint" wx:if="{{error && !loading}}">
+    <text class="error-text">{{error}}</text>
+    <text class="retry-btn" bindtap="retryLoad">重试</text>
+  </view>
+
+  <!-- 暂无数据 -->
+  <view class="empty-hint" wx:if="{{!loading && !error && !tideData}}">
+    <text class="empty-text">暂无潮汐数据，请稍后重试</text>
+  </view>
+
+  <!-- 底部占位 -->
+  <view class="tabbar-placeholder"></view>
+
+</view>
+
+<!-- 自定义底部导航栏 -->
+<custom-tabbar current="tide" />
