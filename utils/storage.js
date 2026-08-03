@@ -49,9 +49,7 @@ const DEFAULT_WOODEN_FISH_SETTINGS = {
 const DEFAULT_TOMATO_SETTINGS = {
   focus: 45,        // 专注时长（分钟），UI 档位：5 / 15 / 45
   focusCustom: 0,   // 自定义专注时长（分钟），0 表示未启用
-  short: 5,         // 短休息（分钟）
-  long: 15,         // 长休息（分钟）
-  longEvery: 4,     // 每 N 个番茄进入一次长休息
+  long: 15,         // 长休息（分钟）；每完成 1 个番茄即进长休息
   vibrate: true,    // 阶段结束震动提醒
   sound: true,      // 阶段结束声音提醒
   keepScreenOn: true // 专注中保持屏幕常亮

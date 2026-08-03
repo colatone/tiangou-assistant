@@ -3,14 +3,13 @@ var S = require('../../utils/storage')
 var WAV = require('../../utils/wav')
 
 /* ═══ 常量（顶部分段，ES5）═══ */
-var PHASE = { IDLE: 'idle', FOCUS: 'focusing', SHORT: 'short_break', LONG: 'long_break' }
+var PHASE = { IDLE: 'idle', FOCUS: 'focusing', LONG: 'long_break' }
 var FOCUS_OPTIONS = [5, 15, 45]
 var FOCUS_DEFAULT = 45
-var SHORT_DEFAULT = 5
 var LONG_DEFAULT = 15
 var LONG_EVERY = 4
-var PHASE_LABEL = { idle: '准备开始', focusing: '专注中', short_break: '短休息', long_break: '长休息' }
-var PHASE_COLOR = { focusing: '#FF8C69', short_break: '#6ECBF5', long_break: '#6ECBF5' }
+var PHASE_LABEL = { idle: '准备开始', focusing: '专注中', long_break: '长休息' }
+var PHASE_COLOR = { focusing: '#FF8C69', long_break: '#6ECBF5' }
 var ABANDON_MS = 2 * 3600 * 1000
 
 function mmss(sec) {
@@ -55,12 +54,9 @@ Page({
     soundOn: true,
     vibrateOn: true,
     keepOn: true,
-    // 设置面板：短休息 / 长休息 时长
-    shortBreakOptions: [3, 5, 10, 15],
+    // 设置面板：长休息时长
     longBreakOptions: [10, 15, 20, 30],
-    shortBreak: 5,
     longBreak: 15,
-    showShortInline: false,
     showLongInline: false,
     // 横屏全屏翻页时钟
     isLandscape: false,
@@ -202,7 +198,6 @@ Page({
       var f = Number(cfg.focusCustom) > 0 ? Number(cfg.focusCustom) : (Number(cfg.focus) || FOCUS_DEFAULT)
       return f * 60000
     }
-    if (phase === PHASE.SHORT) return (Number(cfg.short) || SHORT_DEFAULT) * 60000
     if (phase === PHASE.LONG) return (Number(cfg.long) || LONG_DEFAULT) * 60000
     return (Number(cfg.focus) || FOCUS_DEFAULT) * 60000
   },
@@ -305,10 +300,10 @@ Page({
 
     var nextPhase
     if (isFocus) {
-      nextPhase = (this._completedInCycle % LONG_EVERY === 0) ? PHASE.LONG : PHASE.SHORT
+      nextPhase = PHASE.LONG
     } else {
       nextPhase = PHASE.FOCUS
-      if (this._phase === PHASE.LONG) this._completedInCycle = 0
+      if (this._completedInCycle >= LONG_EVERY) this._completedInCycle = 0
     }
 
     this._phase = nextPhase
@@ -333,7 +328,7 @@ Page({
       var isRound = (this._completedInCycle % LONG_EVERY === 0)
       wx.showModal({
         title: isRound ? '一轮完成 🎉' : '完成 1 个番茄',
-        content: isRound ? '点「开始」进入长休息' : '点「开始」进入休息',
+        content: '点「开始」进入长休息',
         showCancel: false
       })
     }
@@ -595,10 +590,10 @@ Page({
 
   /* ═══ 设置面板 ═══ */
   openSettings: function () {
-    this.setData({ showSetting: true, hideRing: true, showDurationInline: false, showSwitchInline: false, showShortInline: false, showLongInline: false, showCustomInput: false })
+    this.setData({ showSetting: true, hideRing: true, showDurationInline: false, showSwitchInline: false, showLongInline: false, showCustomInput: false })
   },
   closeSetting: function () {
-    this.setData({ showSetting: false, showDurationInline: false, showSwitchInline: false, showShortInline: false, showLongInline: false, showCustomInput: false })
+    this.setData({ showSetting: false, showDurationInline: false, showSwitchInline: false, showLongInline: false, showCustomInput: false })
     this._clearRing()
     this._syncChrome()
   },
@@ -610,7 +605,6 @@ Page({
       soundOn: c.sound !== false,
       vibrateOn: c.vibrate !== false,
       keepOn: c.keepScreenOn !== false,
-      shortBreak: Number(c.short) || SHORT_DEFAULT,
       longBreak: Number(c.long) || LONG_DEFAULT
     })
   },
@@ -646,14 +640,8 @@ Page({
     this.setData({ showSwitchInline: !this.data.showSwitchInline })
   },
 
-  onToggleShortInline: function () {
-    this.setData({ showShortInline: !this.data.showShortInline })
-  },
   onToggleLongInline: function () {
     this.setData({ showLongInline: !this.data.showLongInline })
-  },
-  onPickShort: function (e) {
-    this._setBreak('short', Number(e.currentTarget.dataset.min))
   },
   onPickLong: function (e) {
     this._setBreak('long', Number(e.currentTarget.dataset.min))
@@ -663,10 +651,8 @@ Page({
     c[key] = val
     S.setTomatoSettings(c)
     this._cfg = c
-    var d = {}
-    d[key === 'short' ? 'shortBreak' : 'longBreak'] = val
-    this.setData(d)
-    var inBreak = (this._phase === PHASE.SHORT || this._phase === PHASE.LONG)
+    this.setData({ longBreak: val })
+    var inBreak = (this._phase === PHASE.LONG)
     if (inBreak && !this._running) {
       this._durationMs = this._durationOf(this._phase)
       this._remainMs = this._durationMs

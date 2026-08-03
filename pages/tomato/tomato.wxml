@@ -86,21 +86,6 @@
         <view class="opt {{vibrateOn ? 'on' : ''}}" bindtap="onToggleVibrate">震动</view>
         <view class="opt {{keepOn ? 'on' : ''}}" bindtap="onToggleKeep">屏幕常亮</view>
       </view>
-      <view class="panel-item" bindtap="onToggleShortInline">
-        <text class="panel-name">短休息</text>
-        <text class="panel-arrow">{{showShortInline ? '⌄' : '›'}}</text>
-      </view>
-      <view wx:if="{{showShortInline}}">
-        <view class="opt-row">
-          <view
-            wx:for="{{shortBreakOptions}}"
-            wx:key="*this"
-            class="opt {{item === shortBreak ? 'on' : ''}}"
-            bindtap="onPickShort"
-            data-min="{{item}}"
-          >{{item}} 分</view>
-        </view>
-      </view>
       <view class="panel-item" bindtap="onToggleLongInline">
         <text class="panel-name">长休息</text>
         <text class="panel-arrow">{{showLongInline ? '⌄' : '›'}}</text>
