@@ -86,6 +86,36 @@
         <view class="opt {{vibrateOn ? 'on' : ''}}" bindtap="onToggleVibrate">震动</view>
         <view class="opt {{keepOn ? 'on' : ''}}" bindtap="onToggleKeep">屏幕常亮</view>
       </view>
+      <view class="panel-item" bindtap="onToggleShortInline">
+        <text class="panel-name">短休息</text>
+        <text class="panel-arrow">{{showShortInline ? '⌄' : '›'}}</text>
+      </view>
+      <view wx:if="{{showShortInline}}">
+        <view class="opt-row">
+          <view
+            wx:for="{{shortBreakOptions}}"
+            wx:key="*this"
+            class="opt {{item === shortBreak ? 'on' : ''}}"
+            bindtap="onPickShort"
+            data-min="{{item}}"
+          >{{item}} 分</view>
+        </view>
+      </view>
+      <view class="panel-item" bindtap="onToggleLongInline">
+        <text class="panel-name">长休息</text>
+        <text class="panel-arrow">{{showLongInline ? '⌄' : '›'}}</text>
+      </view>
+      <view wx:if="{{showLongInline}}">
+        <view class="opt-row">
+          <view
+            wx:for="{{longBreakOptions}}"
+            wx:key="*this"
+            class="opt {{item === longBreak ? 'on' : ''}}"
+            bindtap="onPickLong"
+            data-min="{{item}}"
+          >{{item}} 分</view>
+        </view>
+      </view>
       <view class="panel-item" bindtap="onOpenHistory">
         <text class="panel-name">历史</text>
         <text class="panel-arrow">›</text>
@@ -95,6 +125,28 @@
         <text class="panel-name">时光计算器</text>
         <text class="panel-arrow">›</text>
       </view>
+    </view>
+  </view>
+
+  <!-- 横屏全屏翻页时钟（运行时） -->
+  <view wx:if="{{isLandscape && running}}" class="flip-stage">
+    <text class="fs-phase" style="color:{{phaseColor}}">{{phaseLabel}}</text>
+    <view class="flip-clock">
+      <flip-unit value="{{flip[0]}}" />
+      <flip-unit value="{{flip[1]}}" />
+      <view class="flip-colon"></view>
+      <flip-unit value="{{flip[2]}}" />
+      <flip-unit value="{{flip[3]}}" />
+      <view class="flip-colon"></view>
+      <flip-unit value="{{flip[4]}}" />
+      <flip-unit value="{{flip[5]}}" />
+    </view>
+    <view class="fs-dots">
+      <view wx:for="{{roundDots}}" wx:key="index" class="fs-dot {{item.done ? 'done' : ''}}"></view>
+    </view>
+    <view class="fs-controls">
+      <view class="fs-btn" bindtap="onTapMain">暂停</view>
+      <view wx:if="{{phaseKey === 'focusing'}}" class="fs-end" bindtap="tapEnd">结束本次专注</view>
     </view>
   </view>
 </view>

@@ -1,0 +1,7 @@
+<!-- components/flip-unit/flip-unit.wxml -->
+<view class="flip-unit">
+  <view class="card top"><view class="digit">{{value}}</view></view>
+  <view class="card bottom"><view class="digit">{{flipping ? prev : value}}</view></view>
+  <view wx:if="{{flipping}}" class="card flap top-flap"><view class="digit">{{prev}}</view></view>
+  <view wx:if="{{flipping}}" class="card flap bottom-flap"><view class="digit">{{value}}</view></view>
+</view>

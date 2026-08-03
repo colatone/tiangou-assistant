@@ -252,3 +252,76 @@
   .main-btn { margin-top: 32rpx; width: 260rpx; height: 84rpx; font-size: 30rpx; }
   .end-link { margin-top: 16rpx; font-size: 22rpx; }
 }
+
+/* ── 横屏全屏翻页时钟 ── */
+.flip-stage {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: #1C1C22;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.fs-phase {
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+  margin-bottom: 44rpx;
+  opacity: 0.9;
+}
+.flip-clock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flip-colon {
+  width: 16rpx;
+  height: 64rpx;
+  margin: 0 12rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.flip-colon::before,
+.flip-colon::after {
+  content: '';
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #6B6B75;
+}
+.fs-dots {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 54rpx;
+}
+.fs-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+.fs-dot.done {
+  background: #FF8C69;
+}
+.fs-controls {
+  margin-top: 54rpx;
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+}
+.fs-btn {
+  padding: 20rpx 64rpx;
+  border-radius: 40rpx;
+  background: rgba(255, 255, 255, 0.1);
+  color: #F2F2F5;
+  border: 2rpx solid rgba(255, 255, 255, 0.25);
+  font-size: 30rpx;
+}
+.fs-btn:active { background: rgba(255, 255, 255, 0.2); }
+.fs-end {
+  font-size: 26rpx;
+  color: #9A9AA2;
+}
+.fs-end:active { opacity: 0.6; }

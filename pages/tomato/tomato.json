@@ -1,5 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "flip-unit": "/components/flip-unit/flip-unit"
+  },
   "navigationBarTitleText": "烂番茄",
   "navigationBarBackgroundColor": "#FFF8F0",
   "navigationBarTextStyle": "black",

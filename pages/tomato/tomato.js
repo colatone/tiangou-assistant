@@ -18,6 +18,13 @@ function mmss(sec) {
   var s = sec % 60
   return (m < 10 ? '0' + m : '' + m) + ':' + (s < 10 ? '0' + s : '' + s)
 }
+function hhmmss(sec) {
+  function p(n) { return (n < 10 ? '0' + n : '' + n) }
+  var h = Math.floor(sec / 3600)
+  var m = Math.floor((sec % 3600) / 60)
+  var s = sec % 60
+  return p(h) + p(m) + p(s)
+}
 function dateStrOf(ts) {
   var d = new Date(ts)
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
@@ -47,7 +54,17 @@ Page({
     // 设置面板：开关
     soundOn: true,
     vibrateOn: true,
-    keepOn: true
+    keepOn: true,
+    // 设置面板：短休息 / 长休息 时长
+    shortBreakOptions: [3, 5, 10, 15],
+    longBreakOptions: [10, 15, 20, 30],
+    shortBreak: 5,
+    longBreak: 15,
+    showShortInline: false,
+    showLongInline: false,
+    // 横屏全屏翻页时钟
+    isLandscape: false,
+    flip: ['0', '0', '0', '0', '0', '0']
   },
 
   // ═══ 实例字段（高频状态不入 data）═══
@@ -100,6 +117,47 @@ Page({
       }
     }
     setTimeout(function () { self._initRingCanvas() }, 300)
+    this._detectOrientation()
+    this._syncChrome()
+  },
+
+  // 初始/进入页面时检测当前方向
+  _detectOrientation: function () {
+    var w, h
+    try {
+      var wi = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+      w = wi.windowWidth; h = wi.windowHeight
+    } catch (e) { return }
+    if (!w || !h) return
+    var landscape = w > h
+    if (landscape !== this.data.isLandscape) this.setData({ isLandscape: landscape })
+  },
+
+  // 横屏/竖屏切换
+  onResize: function (res) {
+    var size = (res && res.size) || {}
+    var w = size.windowWidth, h = size.windowHeight
+    if (!w || !h) {
+      try {
+        var wi = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+        w = wi.windowWidth; h = wi.windowHeight
+      } catch (e) {}
+    }
+    if (!w || !h) return
+    var landscape = w > h
+    if (landscape !== this.data.isLandscape) {
+      this.setData({ isLandscape: landscape })
+    }
+    this._syncChrome()
+  },
+
+  // 横屏 + 运行中 → 隐藏 tabBar 进入沉浸模式；否则恢复
+  _syncChrome: function () {
+    var full = this._running && this.data.isLandscape
+    try {
+      if (full) wx.hideTabBar({ animation: true })
+      else wx.showTabBar({ animation: true })
+    } catch (e) {}
   },
 
   onHide: function () {
@@ -107,6 +165,7 @@ Page({
     wx.setKeepScreenOn({ keepScreenOn: false })
     this._saveSession()
     this.setData({ floatList: [] })
+    try { wx.showTabBar({ animation: true }) } catch (e) {}
   },
 
   onUnload: function () {
@@ -114,6 +173,7 @@ Page({
     wx.setKeepScreenOn({ keepScreenOn: false })
     if (this._audioCtx) { try { this._audioCtx.close() } catch (e) {}; this._audioCtx = null }
     this.setData({ floatList: [] })
+    try { wx.showTabBar({ animation: true }) } catch (e) {}
   },
 
   onShareAppMessage: function () {
@@ -216,6 +276,7 @@ Page({
       wx.setKeepScreenOn({ keepScreenOn: false })
     }
     this._saveSession()
+    this._syncChrome()
   },
 
   // 自然结束：落下一 phase 并停"待开始"
@@ -251,6 +312,7 @@ Page({
     this._drawRing()
     this._saveSession()
     wx.setKeepScreenOn({ keepScreenOn: false })
+    this._syncChrome()
 
     if (fromBackground) {
       wx.showModal({
@@ -295,7 +357,8 @@ Page({
     this.setData({
       timeText: mmss(sec),
       phaseLabel: PHASE_LABEL[this._phase],
-      phaseColor: PHASE_COLOR[this._phase] || '#FF8C69'
+      phaseColor: PHASE_COLOR[this._phase] || '#FF8C69',
+      flip: hhmmss(sec).split('')
     })
   },
 
@@ -331,6 +394,7 @@ Page({
     this._renderTime(true)
     this._drawRing()
     this._saveSession()
+    this._syncChrome()
   },
 
   tapResume: function () {
@@ -347,6 +411,7 @@ Page({
     } else {
       this._startPhase(this._phase, true)
     }
+    this._syncChrome()
   },
 
   // 轻量出口：结束本次专注（当前番茄不计入）
@@ -368,6 +433,7 @@ Page({
         S.setTomatoSession(null)
         wx.setKeepScreenOn({ keepScreenOn: false })
         self._resetIdle(true)
+        self._syncChrome()
       }
     })
   },
@@ -536,7 +602,9 @@ Page({
     this.setData({
       soundOn: c.sound !== false,
       vibrateOn: c.vibrate !== false,
-      keepOn: c.keepScreenOn !== false
+      keepOn: c.keepScreenOn !== false,
+      shortBreak: Number(c.short) || SHORT_DEFAULT,
+      longBreak: Number(c.long) || LONG_DEFAULT
     })
   },
   onToggleSound: function () {
@@ -569,6 +637,38 @@ Page({
   },
   onToggleSwitchInline: function () {
     this.setData({ showSwitchInline: !this.data.showSwitchInline })
+  },
+
+  onToggleShortInline: function () {
+    this.setData({ showShortInline: !this.data.showShortInline })
+  },
+  onToggleLongInline: function () {
+    this.setData({ showLongInline: !this.data.showLongInline })
+  },
+  onPickShort: function (e) {
+    this._setBreak('short', Number(e.currentTarget.dataset.min))
+  },
+  onPickLong: function (e) {
+    this._setBreak('long', Number(e.currentTarget.dataset.min))
+  },
+  _setBreak: function (key, val) {
+    var c = S.getTomatoSettings()
+    c[key] = val
+    S.setTomatoSettings(c)
+    this._cfg = c
+    var d = {}
+    d[key === 'short' ? 'shortBreak' : 'longBreak'] = val
+    this.setData(d)
+    var inBreak = (this._phase === PHASE.SHORT || this._phase === PHASE.LONG)
+    if (inBreak && !this._running) {
+      this._durationMs = this._durationOf(this._phase)
+      this._remainMs = this._durationMs
+      this._lastSec = -1
+      this._renderTime(true)
+      this._drawRing()
+    } else {
+      wx.showToast({ title: '下个时段生效', icon: 'none' })
+    }
   },
 
   onPickFocus: function (e) {

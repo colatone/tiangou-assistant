@@ -1,0 +1,73 @@
+/* components/flip-unit/flip-unit.wxss — 翻页数字 */
+.flip-unit {
+  position: relative;
+  width: 104rpx;
+  height: 140rpx;
+  margin: 0 4rpx;
+  perspective: 500rpx;
+  font-size: 104rpx;
+  font-weight: 700;
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: #2A2A33;
+  color: #F2F2F5;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+}
+.card.top {
+  top: 0;
+  border-radius: 14rpx 14rpx 0 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.4);
+}
+.card.bottom {
+  top: 50%;
+  border-radius: 0 0 14rpx 14rpx;
+}
+
+.digit {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 140rpx;
+  line-height: 140rpx;
+  text-align: center;
+}
+.card.top .digit { top: 0; }
+.card.bottom .digit { top: -70rpx; }
+
+/* ── 翻页动画叶片 ── */
+.flap {
+  z-index: 5;
+  background: #2A2A33;
+  color: #F2F2F5;
+}
+.top-flap {
+  top: 0;
+  border-radius: 14rpx 14rpx 0 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.4);
+  transform-origin: 50% 100%;
+  animation: flipTop 0.3s ease-in forwards;
+}
+.bottom-flap {
+  top: 50%;
+  border-radius: 0 0 14rpx 14rpx;
+  transform-origin: 50% 0%;
+  animation: flipBottom 0.3s ease-out 0.3s forwards;
+}
+.top-flap .digit { top: 0; }
+.bottom-flap .digit { top: -70rpx; }
+
+@keyframes flipTop {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+@keyframes flipBottom {
+  0%   { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
