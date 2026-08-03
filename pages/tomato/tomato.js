@@ -151,13 +151,22 @@ Page({
     this._syncChrome()
   },
 
-  // 横屏 + 运行中 → 隐藏 tabBar 进入沉浸模式；否则恢复
+  // 横屏 + 运行中 → 隐藏 tabBar，并移除 ring canvas（原生组件会盖在普通 view 之上）
   _syncChrome: function () {
     var full = this._running && this.data.isLandscape
     try {
       if (full) wx.hideTabBar({ animation: true })
       else wx.showTabBar({ animation: true })
     } catch (e) {}
+    // ring canvas 是原生组件，必须用 wx:if 移除才能避免盖住翻页时钟
+    var shouldHideRing = full || this.data.showSetting
+    if (this.data.hideRing !== shouldHideRing) {
+      this.setData({ hideRing: shouldHideRing })
+      if (!shouldHideRing) {
+        var self = this
+        setTimeout(function () { self._initRingCanvas() }, 300)
+      }
+    }
   },
 
   onHide: function () {
@@ -586,14 +595,12 @@ Page({
 
   /* ═══ 设置面板 ═══ */
   openSettings: function () {
-    this.setData({ showSetting: true, hideRing: true, showDurationInline: false, showSwitchInline: false, showCustomInput: false })
+    this.setData({ showSetting: true, hideRing: true, showDurationInline: false, showSwitchInline: false, showShortInline: false, showLongInline: false, showCustomInput: false })
   },
   closeSetting: function () {
-    this.setData({ showSetting: false, showDurationInline: false, showSwitchInline: false, showCustomInput: false })
-    this.setData({ hideRing: false })
+    this.setData({ showSetting: false, showDurationInline: false, showSwitchInline: false, showShortInline: false, showLongInline: false, showCustomInput: false })
     this._clearRing()
-    var self = this
-    setTimeout(function () { self._initRingCanvas() }, 300)
+    this._syncChrome()
   },
   onPanelTap: function () {},
 

@@ -263,22 +263,26 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  padding: 0 calc(20rpx + env(safe-area-inset-right)) 0 calc(20rpx + env(safe-area-inset-left));
+  overflow: hidden;
 }
 .fs-phase {
   font-size: 30rpx;
   letter-spacing: 4rpx;
-  margin-bottom: 44rpx;
+  margin-bottom: 40rpx;
   opacity: 0.9;
 }
 .flip-clock {
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
 }
 .flip-colon {
-  width: 16rpx;
-  height: 64rpx;
-  margin: 0 12rpx;
+  width: 14rpx;
+  height: 56rpx;
+  margin: 0 10rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -286,8 +290,8 @@
 .flip-colon::before,
 .flip-colon::after {
   content: '';
-  width: 16rpx;
-  height: 16rpx;
+  width: 14rpx;
+  height: 14rpx;
   border-radius: 50%;
   background: #6B6B75;
 }

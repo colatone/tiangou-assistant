@@ -1,11 +1,11 @@
 /* components/flip-unit/flip-unit.wxss — 翻页数字 */
 .flip-unit {
   position: relative;
-  width: 104rpx;
-  height: 140rpx;
-  margin: 0 4rpx;
+  width: 96rpx;
+  height: 130rpx;
+  margin: 0 3rpx;
   perspective: 500rpx;
-  font-size: 104rpx;
+  font-size: 96rpx;
   font-weight: 700;
 }
 
@@ -22,24 +22,24 @@
 }
 .card.top {
   top: 0;
-  border-radius: 14rpx 14rpx 0 0;
+  border-radius: 12rpx 12rpx 0 0;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.4);
 }
 .card.bottom {
   top: 50%;
-  border-radius: 0 0 14rpx 14rpx;
+  border-radius: 0 0 12rpx 12rpx;
 }
 
 .digit {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 140rpx;
-  line-height: 140rpx;
+  height: 130rpx;
+  line-height: 130rpx;
   text-align: center;
 }
 .card.top .digit { top: 0; }
-.card.bottom .digit { top: -70rpx; }
+.card.bottom .digit { top: -65rpx; }
 
 /* ── 翻页动画叶片 ── */
 .flap {
@@ -49,19 +49,19 @@
 }
 .top-flap {
   top: 0;
-  border-radius: 14rpx 14rpx 0 0;
+  border-radius: 12rpx 12rpx 0 0;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.4);
   transform-origin: 50% 100%;
   animation: flipTop 0.3s ease-in forwards;
 }
 .bottom-flap {
   top: 50%;
-  border-radius: 0 0 14rpx 14rpx;
+  border-radius: 0 0 12rpx 12rpx;
   transform-origin: 50% 0%;
   animation: flipBottom 0.3s ease-out 0.3s forwards;
 }
 .top-flap .digit { top: 0; }
-.bottom-flap .digit { top: -70rpx; }
+.bottom-flap .digit { top: -65rpx; }
 
 @keyframes flipTop {
   0%   { transform: rotateX(0deg); }
