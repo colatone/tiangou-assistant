@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "custom-tabbar": "../../components/custom-tabbar/custom-tabbar"
+  },
+  "navigationBarTitleText": "烂番茄统计",
+  "navigationBarBackgroundColor": "#FFF8F0",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FFF8F0"
+}

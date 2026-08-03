@@ -202,7 +202,6 @@ Page({
         })
       }
     } catch (e) {
-      console.log('检查提醒失败:', e)
     }
   },
 

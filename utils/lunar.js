@@ -373,48 +373,11 @@ function getHighlightTag(term, sHoliday, lHoliday) {
   return null
 }
 
-/**
- * 获取今天的农历信息（快捷方法）
- */
-function todayLunar() {
-  var now = new Date()
-  var y = now.getFullYear()
-  var m = now.getMonth() + 1
-  var d = now.getDate()
-  return getFullLunarInfo(
-    y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0')
-  )
-}
-
-/**
- * 获取距离目标日期最近的未来节气
- */
-function getNextSolarTerm(dateStr) {
-  if (!dateStr) return null
-  var d = new Date(dateStr)
-  var year = d.getFullYear()
-
-  // 遍历当年和次年的节气
-  for (var yr = year; yr <= year + 1; yr++) {
-    for (var i = 0; i < 24; i++) {
-      var termMs = new Date(1900, 0, 6, 2, 5, 0).getTime() + TERM_INFO[i] * 60000
-      termMs += ((yr - 1900) * 365.2422 * 1440 + Math.floor((yr - 1900) / 4) * 1440) * 60000
-      var td = new Date(termMs)
-      if (td.getTime() > d.getTime()) {
-        return { name: SOLAR_TERMS[i], date: td, order: i + 1 }
-      }
-    }
-  }
-  return null
-}
-
 module.exports = {
   solarToLunar,
   formatLunarInfo,
   getFullLunarInfo,
   getSolarTerm,
-  todayLunar,
-  getNextSolarTerm,
 
   // 常量供外部使用
   TIAN_GAN,

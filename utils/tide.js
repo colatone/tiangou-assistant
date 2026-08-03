@@ -59,15 +59,6 @@ function todayStr() {
     pad2(d.getDate())
 }
 
-/** 获取 N 天后的日期 */
-function dateOffsetStr(days) {
-  var d = new Date()
-  d.setDate(d.getDate() + days)
-  return d.getFullYear() + '-' +
-    pad2(d.getMonth() + 1) + '-' +
-    pad2(d.getDate())
-}
-
 // ============================================================
 //  站点匹配
 // ============================================================
@@ -254,34 +245,6 @@ function recommendBeachcombing(tides) {
   return recs.slice(0, 2)
 }
 
-/**
- * 找出当前时刻之后最近的一个赶海窗口（用于弹窗/摘要）
- * @param {Array} beachcombing - 推荐时段数组
- * @param {string} nowIso - 当前时间（ISO 格式）
- * @returns {Object|null}
- */
-function nearestWindowFromNow(beachcombing, nowIso) {
-  if (!beachcombing || !beachcombing.length) return null
-  var nowMin = isoToMinutes(nowIso)
-  for (var i = 0; i < beachcombing.length; i++) {
-    var w = beachcombing[i]
-    var startMin = hmToMinutes(w.start)
-    if (startMin > nowMin) return w
-  }
-  // 都过了的话返回第一个（明天）
-  return beachcombing[0]
-}
-
-function isoToMinutes(iso) {
-  var m = String(iso).match(/T(\d{2}):(\d{2})/)
-  return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : 0
-}
-
-function hmToMinutes(hm) {
-  var p = String(hm).split(':')
-  return p.length === 2 ? parseInt(p[0], 10) * 60 + parseInt(p[1], 10) : 0
-}
-
 // ============================================================
 //  Open-Meteo 响应 → 内部模型 归一化
 // ============================================================
@@ -408,25 +371,9 @@ function getTideForecast(stationOrId, dateStr) {
     })
 }
 
-/**
- * 获取未来 N 天的潮汐数据（批量）
- * @param {Object|string} stationOrId
- * @param {number} [days=7] - 天数
- * @returns {Promise.<Array>} 每日数据的数组
- */
-function getMultiDayForecast(stationOrId, days) {
-  days = days || 7
-  var promises = []
-  for (var i = 0; i < days; i++) {
-    promises.push(getTideForecast(stationOrId, dateOffsetStr(i)))
-  }
-  return Promise.all(promises)
-}
-
 module.exports = {
   // 数据获取
   getTideForecast: getTideForecast,
-  getMultiDayForecast: getMultiDayForecast,
 
   // 站点查询
   getNearestStation: getNearestStation,
@@ -437,11 +384,9 @@ module.exports = {
   findExtrema: findExtrema,
   buildPhases: buildPhases,
   recommendBeachcombing: recommendBeachcombing,
-  nearestWindowFromNow: nearestWindowFromNow,
 
   // 工具
   haversineKm: haversineKm,
   extractHM: extractHM,
-  todayStr: todayStr,
-  dateOffsetStr: dateOffsetStr
+  todayStr: todayStr
 }

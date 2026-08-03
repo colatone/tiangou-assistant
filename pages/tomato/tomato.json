@@ -1,0 +1,8 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "烂番茄",
+  "navigationBarBackgroundColor": "#FFF8F0",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FFF8F0",
+  "pageOrientation": "auto"
+}

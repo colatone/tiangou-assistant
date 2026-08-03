@@ -195,10 +195,6 @@ Page({
     this._loadConfig()
   },
 
-  _fallbackToIdle() {
-    this.setData({ drawPhase: 'idle', drawText: '开始抽签' })
-  },
-
   onDrawAgain() {
     this.setData({ showResult: false })
     var wheel = this.selectComponent('#wheel')

@@ -32,24 +32,6 @@ function formatDate(dateStr) {
 }
 
 /**
- * 获取农历日期信息
- */
-function getLunarDate(dateStr) {
-  if (!dateStr) return ''
-  try {
-    const info = lunarUtil.getFullLunarInfo(dateStr)
-    if (info && info.short) {
-      // 如果有高亮标注（节日/节气），优先展示
-      if (info.highlightTag) {
-        return info.short + ' · ' + info.highlightTag
-      }
-      return info.short
-    }
-  } catch (e) { /* ignore */ }
-  return ''
-}
-
-/**
  * 获取完整农历信息对象（供卡片详情使用）
  */
 function getFullLunarInfo(dateStr) {
@@ -86,7 +68,6 @@ function getTodayStr() {
 module.exports = {
   calcDays,
   formatDate,
-  getLunarDate,
   getFullLunarInfo,
   generateUUID,
   getTodayStr

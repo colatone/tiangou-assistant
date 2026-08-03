@@ -1,0 +1,100 @@
+<!-- pages/tomato/tomato.wxml -->
+<view class="page">
+  <!-- 统计胶囊 -->
+  <view class="stat-bar">
+    <text class="st-text">今日 {{todayCount}} 个</text>
+    <view class="st-line"></view>
+    <text class="st-text">{{todayMinutes}} 分</text>
+    <view class="st-line"></view>
+    <text class="st-text">连续 {{streakDays}} 天</text>
+  </view>
+
+  <!-- 右上角设置 -->
+  <view class="gear-btn" bindtap="openSettings">
+    <image class="gear-img" src="/images/gear.svg" mode="aspectFit"></image>
+  </view>
+
+  <!-- 环形 + 中心数字：垂直居中 -->
+  <view class="center-stage">
+  <view class="ring-wrap">
+    <canvas wx:if="{{!hideRing}}" type="2d" id="ringCVS" class="ring-canvas"></canvas>
+    <view class="ring-center">
+      <text class="time-text" style="color:{{phaseColor}}">{{timeText}}</text>
+      <text class="phase-label" style="color:{{phaseColor}}">{{phaseLabel}}</text>
+    </view>
+  </view>
+
+  <!-- 本轮点阵 -->
+  <view class="dots">
+    <view wx:for="{{roundDots}}" wx:key="index" class="dot {{item.done ? 'done' : ''}}"></view>
+  </view>
+
+  <!-- 主按钮 -->
+  <view class="main-btn {{running ? 'paused' : ''}}" bindtap="onTapMain">
+    <text>{{phaseKey === 'idle' ? '开始' : (running ? '暂停' : '继续')}}</text>
+  </view>
+
+  <!-- 结束本次专注（仅专注进行中显示） -->
+  <view wx:if="{{phaseKey === 'focusing'}}" class="end-link" bindtap="tapEnd">
+    <text>结束本次专注</text>
+  </view>
+  </view>
+
+  <!-- +1 飘字层 -->
+  <view class="float-layer">
+    <view
+      wx:for="{{floatList}}"
+      wx:key="id"
+      class="float-item"
+      style="--end-y: {{item.endY}}rpx; animation: floatUp {{item.duration}}ms ease-out forwards;"
+    >+1</view>
+  </view>
+
+  <!-- 设置面板（底部半屏） -->
+  <view wx:if="{{showSetting}}" class="mask" bindtap="closeSetting">
+    <view class="panel" catchtap="onPanelTap">
+      <view class="panel-title">设置</view>
+
+      <view class="panel-item" bindtap="onToggleDurationInline">
+        <text class="panel-name">时长</text>
+        <text class="panel-arrow">{{showDurationInline ? '⌄' : '›'}}</text>
+      </view>
+      <view wx:if="{{showDurationInline}}">
+        <view class="opt-row">
+          <view
+            wx:for="{{focusOptions}}"
+            wx:key="*this"
+            class="opt {{item === focusValue ? 'on' : ''}}"
+            bindtap="onPickFocus"
+            data-min="{{item}}"
+          >{{item}} 分</view>
+        </view>
+        <view class="opt-row">
+          <view class="opt {{focusValue === 'custom' ? 'on' : ''}}" bindtap="onOpenCustom">自定义</view>
+        </view>
+        <view wx:if="{{showCustomInput}}" class="custom-row">
+          <input class="custom-input" type="number" placeholder="输入分钟" bindinput="onCustomInput" />
+          <view class="custom-ok" bindtap="onSaveCustom">确定</view>
+        </view>
+      </view>
+      <view class="panel-item" bindtap="onToggleSwitchInline">
+        <text class="panel-name">开关</text>
+        <text class="panel-arrow">{{showSwitchInline ? '⌄' : '›'}}</text>
+      </view>
+      <view wx:if="{{showSwitchInline}}" class="opt-row switch-inline-row">
+        <view class="opt {{soundOn ? 'on' : ''}}" bindtap="onToggleSound">提示音</view>
+        <view class="opt {{vibrateOn ? 'on' : ''}}" bindtap="onToggleVibrate">震动</view>
+        <view class="opt {{keepOn ? 'on' : ''}}" bindtap="onToggleKeep">屏幕常亮</view>
+      </view>
+      <view class="panel-item" bindtap="onOpenHistory">
+        <text class="panel-name">历史</text>
+        <text class="panel-arrow">›</text>
+      </view>
+      <view class="panel-split"></view>
+      <view class="panel-item" bindtap="onOpenTimeCalc">
+        <text class="panel-name">时光计算器</text>
+        <text class="panel-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</view>

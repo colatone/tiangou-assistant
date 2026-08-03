@@ -236,5 +236,5 @@ Page({
   },
 
   noop() {},
-  onShareAppMessage() { return { title: '舔狗助手·设置', path: '/pages/lottery/lottery' } }
+  onShareAppMessage() { return { title: '舔狗助手 · 幸运抽签', path: '/pages/lottery/lottery' } }
 })

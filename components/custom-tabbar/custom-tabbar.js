@@ -11,7 +11,7 @@ Component({
     tabs: [
       { key: 'tools', text: '工具', path: '/pages/others/others', icon: '/images/tab_more.png', iconActive: '/images/tab_more_active.png' },
       { key: 'typhoon', text: '台风', path: '/pages/typhoon/typhoon', icon: '/images/tab_typhoon.png', iconActive: '/images/tab_typhoon_active.png' },
-      { key: 'time', text: '时光', path: '/pages/index/index', icon: '/images/tab_time.png', iconActive: '/images/tab_time_active.png' }
+      { key: 'tomato', text: '烂番茄', path: '/pages/tomato/tomato', icon: '/images/tab_tomato.png', iconActive: '/images/tab_tomato_active.png' }
     ]
   },
 

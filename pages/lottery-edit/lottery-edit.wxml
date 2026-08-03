@@ -45,6 +45,8 @@
           </view>
         </view>
 
+        <view class="add-row" bindtap="onAddPerson">＋ 添加人员</view>
+
         <view class="btn-row">
           <button class="btn-primary flex-1" bindtap="onSavePeople">保存</button>
           <button class="btn-reset" bindtap="onResetPeople">重置默认</button>
@@ -93,6 +95,8 @@
             </view>
           </view>
         </view>
+
+        <view class="add-row" bindtap="onAddPrize">＋ 添加奖项</view>
 
         <view class="btn-row">
           <button class="btn-primary flex-1" bindtap="onSavePrizes">保存</button>

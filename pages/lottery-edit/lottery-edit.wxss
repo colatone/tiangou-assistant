@@ -75,29 +75,7 @@ page { background: #FFF8F0; }
 }
 .act-link.danger { color: #FF6B6B; }
 
-/* 卡片头部多操作按钮组 */
-.card-actions {
-  display: flex;
-  gap: 20rpx;
-  flex-shrink: 0;
-}
-
 /* ===== 批量添加区域 ===== */
-.batch-area { margin-bottom: 16rpx; }
-.batch-row {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  padding: 18rpx 20rpx;
-  border: 2rpx dashed rgba(255,140,105,0.3);
-  border-radius: 14rpx;
-}
-.batch-icon { font-size: 32rpx; }
-.batch-label {
-  font-size: 26rpx;
-  color: #FF8C69;
-  font-weight: 500;
-}
 .batch-input-row {
   display: flex;
   align-items: center;

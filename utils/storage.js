@@ -13,8 +13,10 @@ const STORAGE_KEYS = {
   WOODEN_FISH_TODAY: 'wooden_fish_today',
   WOODEN_FISH_DATES: 'wooden_fish_dates',
   WOODEN_FISH_SETTINGS: 'wooden_fish_settings',
-  DRAGONBALL_CACHE: 'dragonball_cache',
-  DRAGONBALL_FOLLOW: 'dragonball_follow'
+  TOMATO_SETTINGS: 'tomato_settings',
+  TOMATO_RECORDS: 'tomato_records',
+  TOMATO_TODAY: 'tomato_today',
+  TOMATO_SESSION: 'tomato_session'
 }
 
 // 抽奖默认奖项配置（首次启动种子化）—— 团队抽签「谁做家务」场景
@@ -41,6 +43,18 @@ const DEFAULT_WOODEN_FISH_SETTINGS = {
   theme: 'classic',
   vibration: false,
   fortuneN: 30
+}
+
+// 烂番茄默认设置（focus 在 UI 暴露档位选择，其余走内部默认值）
+const DEFAULT_TOMATO_SETTINGS = {
+  focus: 45,        // 专注时长（分钟），UI 档位：5 / 15 / 45
+  focusCustom: 0,   // 自定义专注时长（分钟），0 表示未启用
+  short: 5,         // 短休息（分钟）
+  long: 15,         // 长休息（分钟）
+  longEvery: 4,     // 每 N 个番茄进入一次长休息
+  vibrate: true,    // 阶段结束震动提醒
+  sound: true,      // 阶段结束声音提醒
+  keepScreenOn: true // 专注中保持屏幕常亮
 }
 
 const PRESET_CATEGORIES = [
@@ -167,6 +181,25 @@ function initDefaults() {
     var fishSettings = wx.getStorageSync(STORAGE_KEYS.WOODEN_FISH_SETTINGS)
     if (!fishSettings) {
       wx.setStorageSync(STORAGE_KEYS.WOODEN_FISH_SETTINGS, JSON.parse(JSON.stringify(DEFAULT_WOODEN_FISH_SETTINGS)))
+    }
+
+    // 初始化烂番茄设置（如不存在）
+    var tomatoSettings = wx.getStorageSync(STORAGE_KEYS.TOMATO_SETTINGS)
+    if (!tomatoSettings) {
+      wx.setStorageSync(STORAGE_KEYS.TOMATO_SETTINGS, JSON.parse(JSON.stringify(DEFAULT_TOMATO_SETTINGS)))
+    }
+
+    // 初始化烂番茄历史记录（如不存在）
+    var tomatoRecords = wx.getStorageSync(STORAGE_KEYS.TOMATO_RECORDS)
+    if (!tomatoRecords) {
+      wx.setStorageSync(STORAGE_KEYS.TOMATO_RECORDS, {})
+    }
+
+    // 初始化烂番茄今日统计（如不存在或非今天则重置）
+    var todayTomato = getTodayStr()
+    var tomatoTodayData = wx.getStorageSync(STORAGE_KEYS.TOMATO_TODAY)
+    if (!tomatoTodayData || tomatoTodayData.date !== todayTomato) {
+      wx.setStorageSync(STORAGE_KEYS.TOMATO_TODAY, { date: todayTomato, count: 0, minutes: 0 })
     }
   } catch (e) {
     console.error('初始化存储失败:', e)
@@ -381,54 +414,118 @@ function setWoodFishSettings(settings) {
   wx.setStorageSync(STORAGE_KEYS.WOODEN_FISH_SETTINGS, settings || {})
 }
 
-/* ===== 七龙珠（龙珠召唤）相关 ===== */
+/* ===== 烂番茄相关 ===== */
 
-function getDBCache(kind) {
+function getTomatoSettings() {
   try {
-    var all = wx.getStorageSync(STORAGE_KEYS.DRAGONBALL_CACHE) || {}
-    return all[kind] || null
+    var s = wx.getStorageSync(STORAGE_KEYS.TOMATO_SETTINGS)
+    if (!s) return JSON.parse(JSON.stringify(DEFAULT_TOMATO_SETTINGS))
+    return s
+  } catch (e) {
+    return JSON.parse(JSON.stringify(DEFAULT_TOMATO_SETTINGS))
+  }
+}
+
+function setTomatoSettings(settings) {
+  wx.setStorageSync(STORAGE_KEYS.TOMATO_SETTINGS, settings || {})
+}
+
+// 历史记录：{ 'YYYY-MM-DD': { count, minutes } }
+function getTomatoRecords() {
+  try {
+    var raw = wx.getStorageSync(STORAGE_KEYS.TOMATO_RECORDS)
+    if (!raw) return {}
+    // 兼容纯数字形态（旧版仅存 count）
+    var records = {}
+    Object.keys(raw).forEach(function (k) {
+      var v = raw[k]
+      if (typeof v === 'number') {
+        records[k] = { count: v, minutes: 0 }
+      } else if (v && typeof v === 'object') {
+        records[k] = { count: Number(v.count) || 0, minutes: Number(v.minutes) || 0 }
+      } else {
+        records[k] = { count: 0, minutes: 0 }
+      }
+    })
+    return records
+  } catch (e) {
+    return {}
+  }
+}
+
+function setTomatoRecords(records) {
+  wx.setStorageSync(STORAGE_KEYS.TOMATO_RECORDS, records || {})
+}
+
+// 今日统计（跨天自动重置，并与历史记录保持一致）
+function getTomatoToday() {
+  try {
+    var today = getTodayStr()
+    var data = wx.getStorageSync(STORAGE_KEYS.TOMATO_TODAY)
+    if (!data || data.date !== today) {
+      var rec = getTomatoRecords()[today]
+      data = { date: today, count: rec ? rec.count : 0, minutes: rec ? rec.minutes : 0 }
+      wx.setStorageSync(STORAGE_KEYS.TOMATO_TODAY, data)
+    }
+    return data
+  } catch (e) {
+    return { date: getTodayStr(), count: 0, minutes: 0 }
+  }
+}
+
+// 完成一个番茄：dateKey 默认为今天；同步更新历史记录与今日统计
+function addTomatoRecord(dateKey, minutes) {
+  var key = dateKey || getTodayStr()
+  var minutesNum = Number(minutes) || 0
+  var records = getTomatoRecords()
+  var entry = records[key] || { count: 0, minutes: 0 }
+  entry.count += 1
+  entry.minutes += minutesNum
+  records[key] = entry
+  setTomatoRecords(records)
+
+  // 同步今日统计：仅当本次番茄的开始日就是“今天”才更新；跨午夜的番茄按开始日计入历史，不污染今日计数
+  if (key === getTodayStr()) {
+    var today = getTomatoToday()
+    today.count = entry.count
+    today.minutes = entry.minutes
+    wx.setStorageSync(STORAGE_KEYS.TOMATO_TODAY, today)
+  }
+  return entry
+}
+
+// 连续天数：今天有记录则从今天起算；今天为 0 则从昨天起算（今天尚未打破连击）
+function getTomatoStreak() {
+  var records = getTomatoRecords()
+  var d = new Date()
+  function keyOf(date) {
+    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0')
+  }
+  if (!records[keyOf(d)] || records[keyOf(d)].count <= 0) {
+    d.setDate(d.getDate() - 1)
+  }
+  var streak = 0
+  while (records[keyOf(d)] && records[keyOf(d)].count > 0) {
+    streak++
+    d.setDate(d.getDate() - 1)
+  }
+  return streak
+}
+
+function getTomatoSession() {
+  try {
+    return wx.getStorageSync(STORAGE_KEYS.TOMATO_SESSION) || null
   } catch (e) {
     return null
   }
 }
 
-function setDBCache(kind, data) {
-  try {
-    var all = wx.getStorageSync(STORAGE_KEYS.DRAGONBALL_CACHE) || {}
-    all[kind] = data
-    wx.setStorageSync(STORAGE_KEYS.DRAGONBALL_CACHE, all)
-  } catch (e) {}
-}
-
-function getFollowRecords() {
-  try {
-    return wx.getStorageSync(STORAGE_KEYS.DRAGONBALL_FOLLOW) || []
-  } catch (e) {
-    return []
+function setTomatoSession(session) {
+  if (session === null || session === undefined) {
+    wx.removeStorageSync(STORAGE_KEYS.TOMATO_SESSION)
+  } else {
+    wx.setStorageSync(STORAGE_KEYS.TOMATO_SESSION, session)
   }
-}
-
-function setFollowRecords(records) {
-  wx.setStorageSync(STORAGE_KEYS.DRAGONBALL_FOLLOW, records || [])
-}
-
-function addFollowRecord(record) {
-  var records = getFollowRecords()
-  records.unshift(record)
-  setFollowRecords(records)
-  return records
-}
-
-function updateFollowRecord(id, patch) {
-  var records = getFollowRecords()
-  for (var i = 0; i < records.length; i++) {
-    if (records[i].id === id) {
-      records[i] = Object.assign({}, records[i], patch)
-      break
-    }
-  }
-  setFollowRecords(records)
-  return records
 }
 
 module.exports = {
@@ -461,11 +558,13 @@ module.exports = {
   getWoodFishDates,
   getWoodFishSettings,
   setWoodFishSettings,
-  // 七龙珠（龙珠召唤）
-  getDBCache,
-  setDBCache,
-  getFollowRecords,
-  setFollowRecords,
-  addFollowRecord,
-  updateFollowRecord
+  getTomatoSettings,
+  setTomatoSettings,
+  getTomatoRecords,
+  setTomatoRecords,
+  getTomatoToday,
+  addTomatoRecord,
+  getTomatoStreak,
+  getTomatoSession,
+  setTomatoSession
 }

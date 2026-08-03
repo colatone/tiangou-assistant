@@ -85,7 +85,6 @@
   padding: 2rpx 10rpx;
   border-radius: 10rpx;
 }
-.row-right {}
 .row-hits {
   font-size: 28rpx;
   font-weight: 600;

@@ -1,6 +1,9 @@
 // pages/wooden-fish/wooden-fish.js — V18 造型对齐木鱼.png + DOM飘字 + 真实小程序码
 var S = require('../../utils/storage')
 var Q = require('../../utils/quote')   // 复用每日一签
+var Canvas = require('../../utils/canvas')
+var roundRect = Canvas.roundRect, wrapText = Canvas.wrapText
+var WAV = require('../../utils/wav')
 
 /* ═══ 3 档位映射（V27：音量/速度改为滑动档位）═══ */
 var VOL_LEVELS = [0.12, 0.38, 0.70]        // 音量3档：小 / 中 / 大
@@ -8,40 +11,7 @@ var VOL_LABELS = ['小', '中', '大']
 var SPEED_LEVELS = [900, 500, 250]         // 速度3档（ms）：慢 / 中 / 快
 var SPEED_LABELS = ['慢', '中', '快']
 
-/* ═══ 工具函数（与 share-card 一致） ═══ */
-function roundRect(ctx, x, y, w, h, r) {
-  if (w < 2 * r) r = w / 2
-  if (h < 2 * r) r = h / 2
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.lineTo(x + w - r, y)
-  ctx.arcTo(x + w, y, x + w + r, y, r)   // Note: this should be x+w, y+r but keeping original logic
-  ctx.lineTo(x + w, y + h - r)
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
-  ctx.lineTo(x + r, y + h)
-  ctx.arcTo(x, y + h, x, y + h - r, r)
-  ctx.lineTo(x, y + r)
-  ctx.arcTo(x, y, x + r, y, r)
-  ctx.closePath()
-}
-
-function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-  var chars = text.split('')
-  var line = ''
-  var lineY = y
-  for (var i = 0; i < chars.length; i++) {
-    var testLine = line + chars[i]
-    var metrics = ctx.measureText(testLine)
-    if (metrics.width > maxWidth && i > 0) {
-      ctx.fillText(line, x, lineY)
-      line = chars[i]
-      lineY += lineHeight
-    } else {
-      line = testLine
-    }
-  }
-  ctx.fillText(line, x, lineY)
-}
+/* ═══ 工具函数（roundRect / wrapText）已抽到 utils/canvas，WAV 编码抽到 utils/wav ═══ */
 
 Page({
   data: {
@@ -118,7 +88,7 @@ Page({
   },
 
   onShareAppMessage: function () {
-    return { title: '快来增加你的运势！我已攒了' + this.data.merit + '点财运 💰', path: '/pages/others/others' }
+    return { title: '快来增加你的运势！我已攒了' + this.data.merit + '点财运 💰', path: '/pages/wooden-fish/wooden-fish' }
   },
   onShareTimeline: function () {
     return { title: '快来增加你的运势！我已攒了' + this.data.merit + '点财运 💰', query: '' }
@@ -417,24 +387,17 @@ Page({
   },
 
   _genWavB64: function () {
-    var sr = 8000, dur = 0.13, n = Math.floor(sr * dur), bytes = n + 44
-    var buf = new ArrayBuffer(bytes), v = new DataView(buf)
-    var ws = function (o, s) { for (var i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)) }
-    ws(0, 'RIFF'); v.setUint32(4, bytes - 8, true); ws(8, 'WAVE')
-    ws(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true)
-    v.setUint32(24, sr, true); v.setUint32(28, sr, true); v.setUint16(30, 1, true); v.setUint16(32, 8, true)
-    ws(36, 'data'); v.setUint32(40, n, true)
-    for (var i = 0; i < n; i++) {
-      var t = i / sr, env = Math.exp(-t * 30)
-      var s = (Math.sin(2 * Math.PI * 380 * t) * 0.7
-        + Math.sin(2 * Math.PI * 920 * t) * 0.22
-        + Math.sin(2 * Math.PI * 160 * t) * 0.15) * env
-      s = s > 0 ? Math.pow(s, 0.88) : -Math.pow(-s, 0.88)
-      v.setUint8(44 + i, Math.max(0, Math.min(255, Math.floor(128 + s * 118))))
-    }
-    var arr = new Uint8Array(buf), str = ''
-    for (var j = 0; j < arr.length; j++) str += String.fromCharCode(arr[j])
-    return wx.arrayBufferToBase64 ? wx.arrayBufferToBase64(buf) : str
+    return WAV.genWavB64({
+      sr: 8000, dur: 0.13,
+      sample: function (t) {
+        var env = Math.exp(-t * 30)
+        var s = (Math.sin(2 * Math.PI * 380 * t) * 0.7
+          + Math.sin(2 * Math.PI * 920 * t) * 0.22
+          + Math.sin(2 * Math.PI * 160 * t) * 0.15) * env
+        s = s > 0 ? Math.pow(s, 0.88) : -Math.pow(-s, 0.88)
+        return Math.max(0, Math.min(255, Math.floor(128 + s * 118)))
+      }
+    })
   },
 
   /* ═══ 白噪音伴侣（WebAudio 合成雨/风，循环背景音）═══ */

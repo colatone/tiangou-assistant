@@ -1,0 +1,37 @@
+<!-- pages/tomato/history.wxml -->
+<view class="page">
+  <!-- 汇总卡 -->
+  <view class="summary">
+    <view class="sum-card">
+      <text class="sum-num">{{streakDays}}</text>
+      <text class="sum-label">连续天数</text>
+    </view>
+    <view class="sum-card">
+      <text class="sum-num">{{totalCount}}</text>
+      <text class="sum-label">总番茄</text>
+    </view>
+    <view class="sum-card">
+      <text class="sum-num">{{totalMinutes}}</text>
+      <text class="sum-label">总分钟</text>
+    </view>
+  </view>
+
+  <view class="section-title">近 30 天</view>
+
+  <view wx:if="{{hasData}}" class="heat-list">
+    <view wx:for="{{days}}" wx:key="key" class="heat-row">
+      <text class="heat-date">{{item.label}}</text>
+      <view class="heat-bar-wrap">
+        <view class="heat-bar" style="width:{{item.percent}}%"></view>
+      </view>
+      <text class="heat-count">{{item.count}}个</text>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <text>还没有专注记录</text>
+    <text class="empty-sub">回到烂番茄，点「开始」撑住第一个番茄 🍅</text>
+  </view>
+
+  <custom-tabbar current="tomato" />
+</view>

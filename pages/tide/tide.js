@@ -34,9 +34,6 @@ Page({
     tideData: null,
     loading: true,
     error: '',
-
-    // 署名
-    attribution: require('../../config/tide-api').ATTRIBUTION
   },
 
   onLoad: function () {
@@ -84,7 +81,6 @@ Page({
       type: 'gcj02',
       isHighAccuracy: true,
       success: function (res) {
-        console.log('[tide] location ok:', res.latitude.toFixed(4), res.longitude.toFixed(4))
         that.setData({
           userLat: res.latitude,
           userLng: res.longitude,
@@ -107,7 +103,6 @@ Page({
       },
       fail: function () {
         // 用户拒绝授权或定位失败 → 静默保持默认泉港
-        console.log('[tide] location denied or failed, keeping default:', DEFAULT_STATION.name)
         that.setData({ hasLocation: false, userLocation: null })
       }
     })

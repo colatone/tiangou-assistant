@@ -11,7 +11,8 @@
     "pages/lottery-edit/lottery-edit",
     "pages/wooden-fish/wooden-fish",
     "pages/wooden-fish/history",
-    "pages/dragonball/dragonball"
+    "pages/tomato/tomato",
+    "pages/tomato/history"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -39,10 +40,10 @@
         "selectedIconPath": "images/tab_typhoon_active.png"
       },
       {
-        "pagePath": "pages/index/index",
-        "text": "时光",
-        "iconPath": "images/tab_time.png",
-        "selectedIconPath": "images/tab_time_active.png"
+        "pagePath": "pages/tomato/tomato",
+        "text": "烂番茄",
+        "iconPath": "images/tab_tomato.png",
+        "selectedIconPath": "images/tab_tomato_active.png"
       }
     ]
   },

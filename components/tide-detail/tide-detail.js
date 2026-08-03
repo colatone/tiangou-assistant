@@ -17,7 +17,6 @@ Component({
     stationName: '',
     dateLabel: '',
     series: [],       // [{time, height}]
-    curvePoints: '',  // SVG/CSS polyline points
     tides: [],        // [{type, time, height}]
     phases: [],       // [{phase, startTime, endTime}]
     recommend: [],    // 推荐时段
@@ -159,12 +158,6 @@ Component({
         })
       }
       return marks
-    },
-
-    /** 切换日期 */
-    onDateSelect: function () {
-      // 由父组件处理日期切换，此处仅做事件转发
-      this.triggerEvent('dateselect')
     }
   }
 })

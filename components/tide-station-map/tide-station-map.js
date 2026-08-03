@@ -37,18 +37,14 @@ Component({
     popupTide: null,
     // 组件内自行计算的地图高度（px）—— 原生 map 不支持 flex，必须显式 px
     mapHeight: 500,
-    // 港口列表（fallback + 切换入口）
-    stations: [],
     // 注意：activeStationId 已在 properties 中定义，此处不重复声明（避免覆盖父组件传入值）
   },
 
   lifetimes: {
-    attached: function () {
-      console.log('[tide-map] attached, mapKey loaded:', this.data.mapKey ? 'YES(' + this.data.mapKey.slice(0, 6) + '...)' : 'NO')
-      this._calcHeight()
+      attached: function () {
+        this._calcHeight()
       this._buildMarkers()
       this._centerMap()
-      this._loadStations()
     }
   },
 
@@ -75,7 +71,6 @@ Component({
         var winH = sysInfo.windowHeight || 600
         // 头部卡片(~90px) + 底部导航占位(~70px) + 安全边距
         var mapH = Math.max(300, winH - 160)
-        console.log('[tide-map] mapHeight =', mapH, 'px (windowHeight:', winH, ')')
         this.setData({ mapHeight: mapH })
       } catch (e) {
         console.warn('[tide-map] calc height failed, use default', e)
@@ -83,13 +78,8 @@ Component({
       }
     },
 
-    /** 加载全部港口列表（用于底部切换条） */
-    _loadStations: function () {
-      var list = tideUtils.getAllStations() || []
-      this.setData({ stations: list })
-    },
-    /** 构建地图 markers（站点锚点 + 用户定位） */
-    _buildMarkers: function () {
+      /** 构建地图 markers（站点锚点 + 用户定位） */
+      _buildMarkers: function () {
       var that = this
       var stations = tideUtils.getAllStations()
       if (!stations || !stations.length) return
@@ -220,17 +210,6 @@ Component({
     /** 关闭弹窗 */
     onClosePopup: function () {
       this.setData({ showPopup: false, popupStation: null, popupTide: null })
-    },
-
-    /** 点击底部港口切换条 → 切换选中站 */
-    onSelectStation: function (e) {
-      var id = e.currentTarget.dataset.id
-      var station = tideUtils.getStationById(id)
-      if (!station) return
-      this.setData({ activeStationId: id })
-      this._buildMarkers()
-      this._centerMap()
-      this.triggerEvent('stationselect', { station: station })
     },
 
     /** 定位按钮 */

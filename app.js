@@ -72,7 +72,6 @@ App({
       // 清理过期提醒
       storage.cleanExpiredReminders()
     } catch (e) {
-      console.log('检查提醒失败:', e)
     }
   },
 

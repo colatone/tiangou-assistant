@@ -1,5 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "custom-tabbar": "../../components/custom-tabbar/custom-tabbar"
+  },
   "navigationBarTitleText": "时光计算器",
   "enablePullDownRefresh": true,
   "backgroundColor": "#FFF8F0"

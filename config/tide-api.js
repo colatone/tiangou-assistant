@@ -14,9 +14,6 @@ module.exports = {
   // https://marine-api.open-meteo.com
   REQUEST_DOMAIN: 'https://marine-api.open-meteo.com',
 
-  // 数据署名文案（页面底部固定展示）
-  ATTRIBUTION: '数据来源：Open-Meteo / DWD',
-
   endpoints: {
     // 海洋预报：逐小时海平面高度（含潮汐分量）
     // 参数：latitude, longitude (WGS84), start_date, end_date, timezone

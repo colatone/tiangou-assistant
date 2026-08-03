@@ -5,6 +5,8 @@
 //   stopping= 减速停稳 → 撒花 → drawEnd
 //   paused  = 暂停渲染（结果弹窗时隐藏canvas）
 
+var roundRect = require('../../utils/canvas').roundRect
+
 Component({
   properties: {
     people: { type: Array, value: [] },
@@ -438,7 +440,7 @@ Component({
         ctx.rotate(((t.rot || 0) + (formProg > 0.5 ? this._rotY * 0.3 : 0)) * Math.PI / 180)
         var s = t.size * sc * breath
         ctx.fillStyle = t.color
-        this._roundRect(ctx, -s / 2, -s / 2, s, s, 6 * sc)
+        roundRect(ctx, -s / 2, -s / 2, s, s, 6 * sc)
         ctx.fill()
         ctx.strokeStyle = 'rgba(255,255,255,0.40)'
         ctx.lineWidth = 1
@@ -501,7 +503,7 @@ Component({
         }
 
         ctx.fillStyle = pj.color || '#FF8C69'
-        this._roundRect(ctx, -s / 2, -s / 2, s, s, 10 * pj.scale)
+        roundRect(ctx, -s / 2, -s / 2, s, s, 10 * pj.scale)
         ctx.fill()
 
         ctx.strokeStyle = 'rgba(255,255,255,0.35)'
@@ -565,16 +567,6 @@ Component({
       ctx.globalAlpha = 1
     },
 
-    _roundRect: function (ctx, x, y, w, h, r) {
-      if (w < 2 * r) r = w / 2
-      if (h < 2 * r) r = h / 2
-      ctx.beginPath()
-      ctx.moveTo(x + r, y)
-      ctx.arcTo(x + w, y, x + w, y + h, r)
-      ctx.arcTo(x + w, y + h, x, y + h, r)
-      ctx.arcTo(x, y + h, x, y, r)
-      ctx.arcTo(x, y, x + w, y, r)
-      ctx.closePath()
-    }
+    // roundRect 已抽到 utils/canvas（见顶部 require）
   }
 })

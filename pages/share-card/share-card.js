@@ -3,6 +3,8 @@
 const dateUtil = require('../../utils/date')
 const storage = require('../../utils/storage')
 const quoteUtil = require('../../utils/quote')
+const canvasUtil = require('../../utils/canvas')
+const roundRect = canvasUtil.roundRect, wrapText = canvasUtil.wrapText
 
 Page({
   data: {
@@ -293,35 +295,4 @@ Page({
   }
 })
 
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.lineTo(x + w - r, y)
-  ctx.arcTo(x + w, y, x + w, y + r, r)
-  ctx.lineTo(x + w, y + h - r)
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
-  ctx.lineTo(x + r, y + h)
-  ctx.arcTo(x, y + h, x, y + h - r, r)
-  ctx.lineTo(x, y + r)
-  ctx.arcTo(x, y, x + r, y, r)
-  ctx.closePath()
-}
-
-function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-  const chars = text.split('')
-  let line = ''
-  let lineY = y
-
-  for (let i = 0; i < chars.length; i++) {
-    const testLine = line + chars[i]
-    const metrics = ctx.measureText(testLine)
-    if (metrics.width > maxWidth && i > 0) {
-      ctx.fillText(line, x, lineY)
-      line = chars[i]
-      lineY += lineHeight
-    } else {
-      line = testLine
-    }
-  }
-  ctx.fillText(line, x, lineY)
-}
+// roundRect / wrapText 已抽到 utils/canvas，避免重复实现

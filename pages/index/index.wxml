@@ -137,4 +137,6 @@
   <view class="float-btn" bindtap="onAddEvent">
     <text class="float-icon">+</text>
   </view>
+
+  <custom-tabbar current="time" />
 </view>
