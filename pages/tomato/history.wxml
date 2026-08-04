@@ -7,16 +7,12 @@
       <text class="sum-label">连续天数</text>
     </view>
     <view class="sum-card">
-      <text class="sum-num">{{totalCount}}</text>
-      <text class="sum-label">总番茄</text>
-    </view>
-    <view class="sum-card">
       <text class="sum-num">{{totalMinutes}}</text>
-      <text class="sum-label">总分钟</text>
+      <text class="sum-label">专注分钟</text>
     </view>
   </view>
 
-  <view class="section-title">近 30 天</view>
+  <view class="section-title">近 15 天</view>
 
   <view wx:if="{{hasData}}" class="heat-list">
     <view wx:for="{{days}}" wx:key="key" class="heat-row">
@@ -24,7 +20,7 @@
       <view class="heat-bar-wrap">
         <view class="heat-bar" style="width:{{item.percent}}%"></view>
       </view>
-      <text class="heat-count">{{item.count}}个</text>
+      <text class="heat-count">{{item.minutes}}分</text>
     </view>
   </view>
 

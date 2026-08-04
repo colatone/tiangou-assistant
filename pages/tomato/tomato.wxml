@@ -31,12 +31,16 @@
 
   <!-- 主按钮 -->
   <view class="main-btn {{running ? 'paused' : ''}}" bindtap="onTapMain">
-    <text>{{phaseKey === 'idle' ? '开始' : (running ? '暂停' : '继续')}}</text>
+    <text>{{phaseKey === 'idle' ? '开始' : (running ? '暂停' : (phaseKey === 'long_break' ? '开始休息' : '继续'))}}</text>
   </view>
 
   <!-- 结束本次专注（仅专注进行中显示） -->
   <view wx:if="{{phaseKey === 'focusing'}}" class="end-link" bindtap="tapEnd">
     <text>结束本次专注</text>
+  </view>
+  <!-- 结束休息（仅休息阶段显示） -->
+  <view wx:if="{{phaseKey === 'long_break'}}" class="end-link" bindtap="tapEndBreak">
+    <text>结束休息</text>
   </view>
   </view>
 
@@ -77,6 +81,28 @@
           <view class="custom-ok" bindtap="onSaveCustom">确定</view>
         </view>
       </view>
+      <view class="panel-item" bindtap="onToggleBreakInline">
+        <text class="panel-name">休息</text>
+        <text class="panel-arrow">{{showBreakInline ? '⌄' : '›'}}</text>
+      </view>
+      <view wx:if="{{showBreakInline}}">
+        <view class="opt-row">
+          <view
+            wx:for="{{longBreakOptions}}"
+            wx:key="*this"
+            class="opt {{item === breakValue ? 'on' : ''}}"
+            bindtap="onPickBreak"
+            data-min="{{item}}"
+          >{{item}} 分</view>
+        </view>
+        <view class="opt-row">
+          <view class="opt {{breakValue === 'custom' ? 'on' : ''}}" bindtap="onOpenBreakCustom">自定义</view>
+        </view>
+        <view wx:if="{{showBreakCustomInput}}" class="custom-row">
+          <input class="custom-input" type="number" placeholder="输入分钟" bindinput="onBreakInput" />
+          <view class="custom-ok" bindtap="onSaveBreakCustom">确定</view>
+        </view>
+      </view>
       <view class="panel-item" bindtap="onToggleSwitchInline">
         <text class="panel-name">开关</text>
         <text class="panel-arrow">{{showSwitchInline ? '⌄' : '›'}}</text>
@@ -85,21 +111,6 @@
         <view class="opt {{soundOn ? 'on' : ''}}" bindtap="onToggleSound">提示音</view>
         <view class="opt {{vibrateOn ? 'on' : ''}}" bindtap="onToggleVibrate">震动</view>
         <view class="opt {{keepOn ? 'on' : ''}}" bindtap="onToggleKeep">屏幕常亮</view>
-      </view>
-      <view class="panel-item" bindtap="onToggleLongInline">
-        <text class="panel-name">长休息</text>
-        <text class="panel-arrow">{{showLongInline ? '⌄' : '›'}}</text>
-      </view>
-      <view wx:if="{{showLongInline}}">
-        <view class="opt-row">
-          <view
-            wx:for="{{longBreakOptions}}"
-            wx:key="*this"
-            class="opt {{item === longBreak ? 'on' : ''}}"
-            bindtap="onPickLong"
-            data-min="{{item}}"
-          >{{item}} 分</view>
-        </view>
       </view>
       <view class="panel-item" bindtap="onOpenHistory">
         <text class="panel-name">历史</text>
@@ -115,7 +126,6 @@
 
   <!-- 横屏全屏翻页时钟（运行时） -->
   <view wx:if="{{isLandscape && running}}" class="flip-stage">
-    <text class="fs-phase" style="color:{{phaseColor}}">{{phaseLabel}}</text>
     <view class="flip-clock">
       <flip-unit value="{{flip[0]}}" />
       <flip-unit value="{{flip[1]}}" />
@@ -126,12 +136,8 @@
       <flip-unit value="{{flip[4]}}" />
       <flip-unit value="{{flip[5]}}" />
     </view>
-    <view class="fs-dots">
-      <view wx:for="{{roundDots}}" wx:key="index" class="fs-dot {{item.done ? 'done' : ''}}"></view>
-    </view>
-    <view class="fs-controls">
-      <view class="fs-btn" bindtap="onTapMain">暂停</view>
-      <view wx:if="{{phaseKey === 'focusing'}}" class="fs-end" bindtap="tapEnd">结束本次专注</view>
+    <view class="fs-rotate" bindtap="tapRotate">
+      <image class="fs-rotate-img" src="/images/rotate.svg" mode="aspectFit"></image>
     </view>
   </view>
 </view>

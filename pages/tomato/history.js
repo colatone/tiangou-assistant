@@ -24,10 +24,10 @@ Page({
   },
 
   onShareAppMessage: function () {
-    return { title: '烂番茄专注 · 我的 30 天', path: '/pages/tomato/tomato' }
+    return { title: '烂番茄专注 · 我的 15 天', path: '/pages/tomato/tomato' }
   },
   onShareTimeline: function () {
-    return { title: '烂番茄专注 · 我的 30 天', query: '' }
+    return { title: '烂番茄专注 · 我的 15 天', query: '' }
   },
 
   _build: function () {
@@ -36,8 +36,8 @@ Page({
     var days = []
     var totalCount = 0
     var totalMinutes = 0
-    var maxCount = 0
-    for (var i = 29; i >= 0; i--) {
+    var maxMinutes = 0
+    for (var i = 0; i <= 14; i++) {
       var d = addDays(today, -i)
       var key = dateKeyOf(d)
       var rec = records[key] || { count: 0, minutes: 0 }
@@ -50,10 +50,10 @@ Page({
       })
       totalCount += rec.count
       totalMinutes += rec.minutes
-      if (rec.count > maxCount) maxCount = rec.count
+      if (rec.minutes > maxMinutes) maxMinutes = rec.minutes
     }
     for (var j = 0; j < days.length; j++) {
-      days[j].percent = maxCount > 0 ? Math.round(days[j].count / maxCount * 100) : 0
+      days[j].percent = maxMinutes > 0 ? Math.round(days[j].minutes / maxMinutes * 100) : 0
     }
     var streak = S.getTomatoStreak()
     this.setData({
@@ -61,7 +61,7 @@ Page({
       totalCount: totalCount,
       totalMinutes: totalMinutes,
       streakDays: streak,
-      hasData: totalCount > 0
+      hasData: totalMinutes > 0
     })
   }
 })

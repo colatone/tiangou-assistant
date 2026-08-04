@@ -71,7 +71,7 @@
   border-radius: 10rpx;
 }
 .heat-count {
-  width: 64rpx;
+  width: 96rpx;
   font-size: 22rpx;
   color: #999999;
   text-align: right;

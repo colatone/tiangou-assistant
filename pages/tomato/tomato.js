@@ -6,9 +6,10 @@ var WAV = require('../../utils/wav')
 var PHASE = { IDLE: 'idle', FOCUS: 'focusing', LONG: 'long_break' }
 var FOCUS_OPTIONS = [5, 15, 45]
 var FOCUS_DEFAULT = 45
-var LONG_DEFAULT = 15
+var BREAK_OPTIONS = [5, 10, 15]
+var BREAK_DEFAULT = 15
 var LONG_EVERY = 4
-var PHASE_LABEL = { idle: '准备开始', focusing: '专注中', long_break: '长休息' }
+var PHASE_LABEL = { idle: '准备开始', focusing: '专注中', long_break: '休息' }
 var PHASE_COLOR = { focusing: '#FF8C69', long_break: '#6ECBF5' }
 var ABANDON_MS = 2 * 3600 * 1000
 
@@ -54,10 +55,13 @@ Page({
     soundOn: true,
     vibrateOn: true,
     keepOn: true,
-    // 设置面板：长休息时长
-    longBreakOptions: [10, 15, 20, 30],
+    // 设置面板：休息时长
+    longBreakOptions: [5, 10, 15],
     longBreak: 15,
-    showLongInline: false,
+    breakValue: 15,
+    breakLabel: '15 分',
+    showBreakInline: false,
+    showBreakCustomInput: false,
     // 横屏全屏翻页时钟
     isLandscape: false,
     flip: ['0', '0', '0', '0', '0', '0']
@@ -82,6 +86,8 @@ Page({
   _innerAudio: null,
   _fid: 0,
   _customDraft: 0,
+  _breakCustomDraft: 0,
+  _forcedPortrait: false,
 
   /* ═══ 生命周期 ═══ */
   onLoad: function () {
@@ -113,6 +119,10 @@ Page({
       }
     }
     setTimeout(function () { self._initRingCanvas() }, 300)
+    if (self._forcedPortrait) {
+      self._forcedPortrait = false
+      if (wx.setPageOrientation) { try { wx.setPageOrientation({ orientation: 'auto', complete: function () {} }) } catch (e) {} }
+    }
     this._detectOrientation()
     this._syncChrome()
   },
@@ -127,6 +137,10 @@ Page({
     if (!w || !h) return
     var landscape = w > h
     if (landscape !== this.data.isLandscape) this.setData({ isLandscape: landscape })
+    if (!landscape && this._forcedPortrait) {
+      this._forcedPortrait = false
+      if (wx.setPageOrientation) { try { wx.setPageOrientation({ orientation: 'auto', complete: function () {} }) } catch (e) {} }
+    }
   },
 
   // 横屏/竖屏切换
@@ -143,6 +157,10 @@ Page({
     var landscape = w > h
     if (landscape !== this.data.isLandscape) {
       this.setData({ isLandscape: landscape })
+    }
+    if (!landscape && this._forcedPortrait) {
+      this._forcedPortrait = false
+      if (wx.setPageOrientation) { try { wx.setPageOrientation({ orientation: 'auto', complete: function () {} }) } catch (e) {} }
     }
     this._syncChrome()
   },
@@ -198,7 +216,10 @@ Page({
       var f = Number(cfg.focusCustom) > 0 ? Number(cfg.focusCustom) : (Number(cfg.focus) || FOCUS_DEFAULT)
       return f * 60000
     }
-    if (phase === PHASE.LONG) return (Number(cfg.long) || LONG_DEFAULT) * 60000
+    if (phase === PHASE.LONG) {
+      var b = Number(cfg.longCustom) > 0 ? Number(cfg.longCustom) : (Number(cfg.long) || BREAK_DEFAULT)
+      return b * 60000
+    }
     return (Number(cfg.focus) || FOCUS_DEFAULT) * 60000
   },
 
@@ -325,10 +346,9 @@ Page({
         showCancel: false
       })
     } else if (isFocus) {
-      var isRound = (this._completedInCycle % LONG_EVERY === 0)
       wx.showModal({
-        title: isRound ? '一轮完成 🎉' : '完成 1 个番茄',
-        content: '点「开始」进入长休息',
+        title: '完成 1 个番茄 🍅',
+        content: '点「开始」进入休息',
         showCancel: false
       })
     }
@@ -440,6 +460,47 @@ Page({
         self._syncChrome()
       }
     })
+  },
+
+  // 休息阶段：结束休息，回到专注准备（保留已完成的番茄计数）
+  tapEndBreak: function () {
+    var self = this
+    wx.showModal({
+      title: '结束休息',
+      content: '当前休息将结束，回到专注准备状态。',
+      confirmText: '结束',
+      cancelText: '取消',
+      success: function (r) {
+        if (!r.confirm) return
+        self._clearTimers()
+        self._phase = PHASE.IDLE
+        self._running = false
+        self._endAt = 0
+        self._durationMs = self._durationOf(PHASE.FOCUS)
+        self._remainMs = self._durationMs
+        // 保留 _completedInCycle（点阵反映已完成的专注）
+        S.setTomatoSession(null)
+        wx.setKeepScreenOn({ keepScreenOn: false })
+        self._renderPhase()
+        self._renderTime(true)
+        self._drawRing()
+        self._syncChrome()
+      }
+    })
+  },
+
+  // 横屏旋转图标：强制回到竖屏（传感器旋转也会触发 onResize 自动回到竖屏）
+  tapRotate: function () {
+    if (wx.setPageOrientation) {
+      try {
+        this._forcedPortrait = true
+        wx.setPageOrientation({ orientation: 'portrait', complete: function () {} })
+      } catch (e) {
+        wx.showToast({ title: '请旋转手机至竖屏', icon: 'none' })
+      }
+    } else {
+      wx.showToast({ title: '请旋转手机至竖屏', icon: 'none' })
+    }
   },
 
   /* ═══ 环形 canvas ═══ */
@@ -590,10 +651,10 @@ Page({
 
   /* ═══ 设置面板 ═══ */
   openSettings: function () {
-    this.setData({ showSetting: true, hideRing: true, showDurationInline: false, showSwitchInline: false, showLongInline: false, showCustomInput: false })
+    this.setData({ showSetting: true, hideRing: true, showDurationInline: false, showSwitchInline: false, showBreakInline: false, showBreakCustomInput: false, showCustomInput: false })
   },
   closeSetting: function () {
-    this.setData({ showSetting: false, showDurationInline: false, showSwitchInline: false, showLongInline: false, showCustomInput: false })
+    this.setData({ showSetting: false, showDurationInline: false, showSwitchInline: false, showBreakInline: false, showBreakCustomInput: false, showCustomInput: false })
     this._clearRing()
     this._syncChrome()
   },
@@ -601,11 +662,14 @@ Page({
 
   _syncToggles: function () {
     var c = this._cfg || {}
+    var bVal = Number(c.longCustom) > 0 ? 'custom' : (Number(c.long) || BREAK_DEFAULT)
     this.setData({
       soundOn: c.sound !== false,
       vibrateOn: c.vibrate !== false,
       keepOn: c.keepScreenOn !== false,
-      longBreak: Number(c.long) || LONG_DEFAULT
+      longBreak: Number(c.long) || BREAK_DEFAULT,
+      breakValue: bVal,
+      breakLabel: bVal === 'custom' ? ('自定义 ' + c.longCustom + ' 分') : (bVal + ' 分')
     })
   },
   onToggleSound: function () {
@@ -640,18 +704,36 @@ Page({
     this.setData({ showSwitchInline: !this.data.showSwitchInline })
   },
 
-  onToggleLongInline: function () {
-    this.setData({ showLongInline: !this.data.showLongInline })
+  onToggleBreakInline: function () {
+    this.setData({ showBreakInline: !this.data.showBreakInline })
   },
-  onPickLong: function (e) {
-    this._setBreak('long', Number(e.currentTarget.dataset.min))
+  onPickBreak: function (e) {
+    this._setBreak('long', Number(e.currentTarget.dataset.min), 0)
   },
-  _setBreak: function (key, val) {
+  onOpenBreakCustom: function () {
+    this.setData({ showBreakCustomInput: true })
+  },
+  onBreakInput: function (e) {
+    this._breakCustomDraft = Number(e.detail.value)
+  },
+  onSaveBreakCustom: function () {
+    var v = this._breakCustomDraft
+    if (!v || v < 1) { wx.showToast({ title: '请输入有效分钟', icon: 'none' }); return }
+    if (v > 180) v = 180
+    this._setBreak('long', 0, v)
+  },
+  _setBreak: function (key, val, custom) {
     var c = S.getTomatoSettings()
     c[key] = val
+    c[key + 'Custom'] = custom || 0
     S.setTomatoSettings(c)
     this._cfg = c
-    this.setData({ longBreak: val })
+    var bv = custom > 0 ? 'custom' : val
+    this.setData({
+      longBreak: val,
+      breakValue: bv,
+      breakLabel: custom > 0 ? ('自定义 ' + custom + ' 分') : (val + ' 分')
+    })
     var inBreak = (this._phase === PHASE.LONG)
     if (inBreak && !this._running) {
       this._durationMs = this._durationOf(this._phase)
@@ -662,6 +744,7 @@ Page({
     } else {
       wx.showToast({ title: '下个时段生效', icon: 'none' })
     }
+    this.setData({ showBreakCustomInput: false })
   },
 
   onPickFocus: function (e) {
