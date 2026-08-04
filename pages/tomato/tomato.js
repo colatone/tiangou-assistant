@@ -363,6 +363,15 @@ Page({
 
     if (fromBackground || isFocus) {
       this._showEndModal(isFocus, fromBackground)
+    } else if (this.data.isLandscape && wx.setPageOrientation) {
+      // 休息结束在横屏：自动转回竖屏（无弹窗，与原设计一致），稍后恢复 auto 方向
+      var self = this
+      try {
+        wx.setPageOrientation({
+          orientation: 'portrait',
+          complete: function () { setTimeout(function () { self._restoreOrientationAuto() }, 600) }
+        })
+      } catch (e) {}
     }
   },
 
