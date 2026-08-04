@@ -66,7 +66,11 @@ Page({
     showBreakCustomInput: false,
     // 横屏全屏翻页时钟
     isLandscape: false,
-    flip: ['0', '0', '0', '0', '0', '0']
+    flip: ['0', '0', '0', '0', '0', '0'],
+    // 横屏结果覆盖层（替代 native modal，避免系统自动转竖屏）
+    showLandscapeResult: false,
+    landscapeResultTitle: '',
+    landscapeResultContent: ''
   },
 
   // ═══ 实例字段（高频状态不入 data）═══
@@ -140,9 +144,22 @@ Page({
     if (!w || !h) return
     var landscape = w > h
     if (landscape !== this.data.isLandscape) this.setData({ isLandscape: landscape })
+    this._maybeShowModalFromLandscape(landscape)
     if (!landscape && this._forcedPortrait) {
       this._forcedPortrait = false
       if (wx.setPageOrientation) { try { wx.setPageOrientation({ orientation: 'auto', complete: function () {} }) } catch (e) {} }
+    }
+  },
+
+  // 横屏结果覆盖层转回竖屏时，补一个 native modal 避免用户错过提示
+  _maybeShowModalFromLandscape: function (landscape) {
+    if (this.data.showLandscapeResult && !landscape) {
+      var title = this.data.landscapeResultTitle
+      var content = this.data.landscapeResultContent
+      this.setData({ showLandscapeResult: false, landscapeResultTitle: '', landscapeResultContent: '' })
+      try {
+        wx.showModal({ title: title, content: content, showCancel: false })
+      } catch (e) {}
     }
   },
 
@@ -161,6 +178,7 @@ Page({
     if (landscape !== this.data.isLandscape) {
       this.setData({ isLandscape: landscape })
     }
+    this._maybeShowModalFromLandscape(landscape)
     if (!landscape && this._forcedPortrait) {
       this._forcedPortrait = false
       if (wx.setPageOrientation) { try { wx.setPageOrientation({ orientation: 'auto', complete: function () {} }) } catch (e) {} }
@@ -168,9 +186,9 @@ Page({
     this._syncChrome()
   },
 
-  // 横屏 + 运行中 → 隐藏 tabBar，并移除 ring canvas（原生组件会盖在普通 view 之上）
+  // 横屏 + （运行中或显示结果覆盖层）→ 隐藏 tabBar，并移除 ring canvas（原生组件会盖在普通 view 之上）
   _syncChrome: function () {
-    var full = this._running && this.data.isLandscape
+    var full = (this._running || this.data.showLandscapeResult) && this.data.isLandscape
     try {
       if (full) wx.hideTabBar({ animation: true })
       else wx.showTabBar({ animation: true })
@@ -359,21 +377,38 @@ Page({
     this._drawRing()
     this._saveSession()
     wx.setKeepScreenOn({ keepScreenOn: false })
-    this._syncChrome()
 
+    // 横屏结束不走 native modal（系统 dialog 会强制转竖屏），用全屏覆盖层替代
     if (fromBackground) {
-      wx.showModal({
-        title: '你离开时',
-        content: isFocus ? '这个番茄已经完成了 🍅' : '休息时段已经结束',
-        showCancel: false
-      })
+      if (this.data.isLandscape) {
+        this.setData({
+          showLandscapeResult: true,
+          landscapeResultTitle: '你离开时',
+          landscapeResultContent: isFocus ? '这个番茄已经完成了 🍅' : '休息时段已经结束'
+        })
+      } else {
+        wx.showModal({
+          title: '你离开时',
+          content: isFocus ? '这个番茄已经完成了 🍅' : '休息时段已经结束',
+          showCancel: false
+        })
+      }
     } else if (isFocus) {
-      wx.showModal({
-        title: '完成 1 个番茄 🍅',
-        content: '点「开始」进入休息',
-        showCancel: false
-      })
+      if (this.data.isLandscape) {
+        this.setData({
+          showLandscapeResult: true,
+          landscapeResultTitle: '完成 1 个番茄 🍅',
+          landscapeResultContent: '点「开始」进入休息'
+        })
+      } else {
+        wx.showModal({
+          title: '完成 1 个番茄 🍅',
+          content: '点「开始」进入休息',
+          showCancel: false
+        })
+      }
     }
+    this._syncChrome()
   },
 
   /* ═══ 计时核心 ═══ */
@@ -523,6 +558,12 @@ Page({
     } else {
       wx.showToast({ title: '请旋转手机至竖屏', icon: 'none' })
     }
+  },
+
+  // 横屏结果覆盖层：点击确定后关闭覆盖层
+  tapLandscapeResult: function () {
+    this.setData({ showLandscapeResult: false })
+    this._syncChrome()
   },
 
   /* ═══ 环形 canvas ═══ */

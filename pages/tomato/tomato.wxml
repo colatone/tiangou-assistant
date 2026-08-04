@@ -126,8 +126,8 @@
     </view>
   </view>
 
-  <!-- 横屏全屏翻页时钟（运行时） -->
-  <view wx:if="{{isLandscape && running}}" class="flip-stage">
+  <!-- 横屏全屏翻页时钟（运行中或显示结果覆盖层） -->
+  <view wx:if="{{isLandscape && (running || showLandscapeResult)}}" class="flip-stage">
     <view class="flip-clock">
       <flip-unit value="{{flip[0]}}" />
       <flip-unit value="{{flip[1]}}" />
@@ -138,6 +138,16 @@
       <flip-unit value="{{flip[4]}}" />
       <flip-unit value="{{flip[5]}}" />
     </view>
+
+    <!-- 横屏结果覆盖层：替代 native modal，避免系统自动转竖屏 -->
+    <view wx:if="{{showLandscapeResult}}" class="landscape-result" catchtap="onPanelTap">
+      <view class="lr-card" catchtap="onPanelTap">
+        <text class="lr-title">{{landscapeResultTitle}}</text>
+        <text class="lr-content">{{landscapeResultContent}}</text>
+        <view class="lr-btn" catchtap="tapLandscapeResult">确定</view>
+      </view>
+    </view>
+
     <view class="fs-rotate" bindtap="tapRotate">
       <image class="fs-rotate-img" src="/images/rotate.svg" mode="aspectFit"></image>
     </view>
