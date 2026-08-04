@@ -222,11 +222,13 @@ Page({
   },
 
   onShareAppMessage: function () {
+    this._forcePortraitTransient()
     var c = this.data.todayCount
     var title = c > 0 ? ('今天已烂番茄专注 ' + c + ' 个，你呢？') : '烂番茄专注 · 摆烂也能撑住一个番茄'
     return { title: title, path: '/pages/tomato/tomato' }
   },
   onShareTimeline: function () {
+    this._forcePortraitTransient()
     var c = this.data.todayCount
     return { title: c > 0 ? ('今天已烂番茄专注 ' + c + ' 个') : '烂番茄专注', query: '' }
   },
@@ -407,6 +409,18 @@ Page({
   // 阶段结束后解除横屏锁定，让传感器可再次旋转
   _restoreOrientationAuto: function () {
     if (wx.setPageOrientation) { try { wx.setPageOrientation({ orientation: 'auto', complete: function () {} }) } catch (e) {} }
+  },
+
+  // 分享等系统交互：先强制转竖屏，稍后恢复 auto 方向
+  _forcePortraitTransient: function () {
+    if (!wx.setPageOrientation) return
+    var self = this
+    try {
+      wx.setPageOrientation({
+        orientation: 'portrait',
+        complete: function () { setTimeout(function () { self._restoreOrientationAuto() }, 600) }
+      })
+    } catch (e) {}
   },
 
   /* ═══ 计时核心 ═══ */
