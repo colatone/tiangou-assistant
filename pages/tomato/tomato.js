@@ -4,7 +4,7 @@ var WAV = require('../../utils/wav')
 
 /* ═══ 常量（顶部分段，ES5）═══ */
 var PHASE = { IDLE: 'idle', FOCUS: 'focusing', LONG: 'long_break' }
-var FOCUS_OPTIONS = [5, 15, 45]
+var FOCUS_OPTIONS = [5, 15, 40]
 var FOCUS_DEFAULT = 45
 var BREAK_OPTIONS = [5, 10, 15]
 var BREAK_DEFAULT = 15
@@ -36,7 +36,7 @@ Page({
     phaseLabel: '准备开始',
     phaseColor: '#FF8C69',
     running: false,
-    timeText: '45:00',
+    timeText: '40:00',
     roundDots: [{ done: false }, { done: false }, { done: false }, { done: false }],
     todayCount: 0,
     todayMinutes: 0,
@@ -46,8 +46,8 @@ Page({
     floatList: [],
     // 设置面板：时长
     focusOptions: FOCUS_OPTIONS,
-    focusValue: 45,
-    focusLabel: '45 分',
+    focusValue: 40,
+    focusLabel: '40 分',
     showDurationInline: false,
     showCustomInput: false,
     showSwitchInline: false,
@@ -64,7 +64,11 @@ Page({
     showBreakCustomInput: false,
     // 横屏全屏翻页时钟
     isLandscape: false,
-    flip: ['0', '0', '0', '0', '0', '0']
+    flip: ['0', '0', '0', '0', '0', '0'],
+    // 自定义导航栏（navigationStyle: custom）
+    statusBarHeight: 0,
+    navHeight: 44,
+    headerHeight: 44
   },
 
   // ═══ 实例字段（高频状态不入 data）═══
@@ -100,6 +104,24 @@ Page({
     this._initAudio()
     this._loadSession()
     this._syncToggles()
+    this._initCustomNav()
+  },
+
+  _initCustomNav: function () {
+    var info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+    var statusBarHeight = info.statusBarHeight || 0
+    var navHeight = 44
+    try {
+      var menu = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null
+      if (menu && menu.height) {
+        navHeight = (menu.top - statusBarHeight) * 2 + menu.height
+      }
+    } catch (e) {}
+    this.setData({
+      statusBarHeight: statusBarHeight,
+      navHeight: navHeight,
+      headerHeight: statusBarHeight + navHeight
+    })
   },
 
   onShow: function () {

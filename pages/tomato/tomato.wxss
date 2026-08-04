@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  padding-top: 20rpx;
+  padding-top: 0;
   padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
   overflow: hidden;
   position: relative;
@@ -26,11 +26,32 @@
 .st-text { font-size: 22rpx; color: #888888; }
 .st-line { width: 1rpx; height: 24rpx; background: #DDDDDD; }
 
+/* ── 自定义标题栏 ── */
+.custom-nav {
+  width: 100%;
+  background: var(--bg-primary, #FFF8F0);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.nav-content {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
 /* ── 右上角设置（齿轮）── */
 .gear-btn {
   position: absolute;
-  top: 24rpx;
   right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
   width: 60rpx;
   height: 60rpx;
   display: flex;
@@ -38,7 +59,7 @@
   justify-content: center;
 }
 .gear-img { width: 40rpx; height: 40rpx; }
-.gear-btn:active { transform: scale(0.9); }
+.gear-btn:active { transform: translateY(-50%) scale(0.9); }
 
 /* ── 计时主体：垂直居中 ── */
 .center-stage {
@@ -291,16 +312,14 @@
 }
 .fs-rotate {
   position: absolute;
-  right: calc(40rpx + env(safe-area-inset-right));
-  bottom: calc(40rpx + env(safe-area-inset-bottom));
-  width: 84rpx;
-  height: 84rpx;
+  right: calc(28rpx + env(safe-area-inset-right));
+  bottom: calc(28rpx + env(safe-area-inset-bottom));
+  width: 40rpx;
+  height: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 2rpx solid rgba(255, 255, 255, 0.2);
+  opacity: 0.35;
 }
-.fs-rotate:active { background: rgba(255, 255, 255, 0.18); }
-.fs-rotate-img { width: 46rpx; height: 46rpx; }
+.fs-rotate:active { opacity: 0.6; }
+.fs-rotate-img { width: 24rpx; height: 24rpx; }

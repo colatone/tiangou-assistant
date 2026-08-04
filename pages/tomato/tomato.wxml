@@ -1,5 +1,15 @@
 <!-- pages/tomato/tomato.wxml -->
 <view class="page">
+  <!-- 自定义标题栏（竖屏显示，横屏隐藏） -->
+  <view wx:if="{{!isLandscape}}" class="custom-nav" style="padding-top:{{statusBarHeight}}px;height:{{headerHeight}}px;">
+    <view class="nav-content" style="height:{{navHeight}}px;">
+      <text class="nav-title">烂番茄</text>
+      <view class="gear-btn" bindtap="openSettings">
+        <image class="gear-img" src="/images/gear.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+
   <!-- 统计胶囊 -->
   <view class="stat-bar">
     <text class="st-text">今日 {{todayCount}} 个</text>
@@ -7,11 +17,6 @@
     <text class="st-text">{{todayMinutes}} 分</text>
     <view class="st-line"></view>
     <text class="st-text">连续 {{streakDays}} 天</text>
-  </view>
-
-  <!-- 右上角设置 -->
-  <view class="gear-btn" bindtap="openSettings">
-    <image class="gear-img" src="/images/gear.svg" mode="aspectFit"></image>
   </view>
 
   <!-- 环形 + 中心数字：垂直居中 -->
