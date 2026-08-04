@@ -4,9 +4,9 @@ var WAV = require('../../utils/wav')
 
 /* ═══ 常量（顶部分段，ES5）═══ */
 var PHASE = { IDLE: 'idle', FOCUS: 'focusing', LONG: 'long_break' }
-var FOCUS_OPTIONS = [5, 15, 40]
+var FOCUS_OPTIONS = [10, 25, 45]
 var FOCUS_DEFAULT = 40
-var BREAK_OPTIONS = [5, 10, 15]
+var BREAK_OPTIONS = [3, 5, 10]
 var BREAK_DEFAULT = 15
 var LONG_EVERY = 4
 var PHASE_LABEL = { idle: '准备开始', focusing: '专注中', long_break: '休息' }
@@ -48,6 +48,7 @@ Page({
     focusOptions: FOCUS_OPTIONS,
     focusValue: 40,
     focusLabel: '40 分',
+    focusHint: '默认 40 分',
     showDurationInline: false,
     showCustomInput: false,
     showSwitchInline: false,
@@ -56,10 +57,11 @@ Page({
     vibrateOn: true,
     keepOn: true,
     // 设置面板：休息时长
-    longBreakOptions: [5, 10, 15],
+    longBreakOptions: [3, 5, 10],
     longBreak: 15,
     breakValue: 15,
     breakLabel: '15 分',
+    breakHint: '默认 15 分',
     showBreakInline: false,
     showBreakCustomInput: false,
     // 横屏全屏翻页时钟
@@ -682,16 +684,40 @@ Page({
 
   _syncToggles: function () {
     var c = this._cfg || {}
+    var fVal = Number(c.focusCustom) > 0 ? 'custom' : (Number(c.focus) || FOCUS_DEFAULT)
     var bVal = Number(c.longCustom) > 0 ? 'custom' : (Number(c.long) || BREAK_DEFAULT)
     this.setData({
       soundOn: c.sound !== false,
       vibrateOn: c.vibrate !== false,
       keepOn: c.keepScreenOn !== false,
+      focusValue: fVal,
+      focusLabel: fVal === 'custom' ? ('自定义 ' + c.focusCustom + ' 分') : (fVal + ' 分'),
       longBreak: Number(c.long) || BREAK_DEFAULT,
       breakValue: bVal,
       breakLabel: bVal === 'custom' ? ('自定义 ' + c.longCustom + ' 分') : (bVal + ' 分')
     })
+    this._updateHints()
   },
+
+  _updateHints: function () {
+    var c = this._cfg || {}
+    var fHint = ''
+    if (Number(c.focusCustom) > 0) {
+      fHint = '自定义 ' + c.focusCustom + ' 分'
+    } else {
+      var f = Number(c.focus) || FOCUS_DEFAULT
+      fHint = (f === FOCUS_DEFAULT ? '默认 ' : '') + f + ' 分'
+    }
+    var bHint = ''
+    if (Number(c.longCustom) > 0) {
+      bHint = '自定义 ' + c.longCustom + ' 分'
+    } else {
+      var b = Number(c.long) || BREAK_DEFAULT
+      bHint = (b === BREAK_DEFAULT ? '默认 ' : '') + b + ' 分'
+    }
+    this.setData({ focusHint: fHint, breakHint: bHint })
+  },
+
   onToggleSound: function () {
     this._setToggle('sound', !this.data.soundOn)
   },
@@ -754,6 +780,7 @@ Page({
       breakValue: bv,
       breakLabel: custom > 0 ? ('自定义 ' + custom + ' 分') : (val + ' 分')
     })
+    this._updateHints()
     var inBreak = (this._phase === PHASE.LONG)
     if (inBreak && !this._running) {
       this._durationMs = this._durationOf(this._phase)
@@ -795,6 +822,7 @@ Page({
       focusValue: fv,
       focusLabel: custom > 0 ? ('自定义 ' + custom + ' 分') : (focus + ' 分')
     })
+    this._updateHints()
     if (this._phase === PHASE.IDLE) {
       this._durationMs = this._durationOf(PHASE.FOCUS)
       this._remainMs = this._durationMs

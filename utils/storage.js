@@ -47,9 +47,9 @@ const DEFAULT_WOODEN_FISH_SETTINGS = {
 
 // 烂番茄默认设置（focus 在 UI 暴露档位选择，其余走内部默认值）
 const DEFAULT_TOMATO_SETTINGS = {
-  focus: 45,        // 专注时长（分钟），UI 档位：5 / 15 / 45
+  focus: 40,        // 专注时长（分钟），UI 档位：10 / 25 / 45；默认 40
   focusCustom: 0,   // 自定义专注时长（分钟），0 表示未启用
-  long: 15,         // 休息时长（分钟），UI 档位：5 / 10 / 15；每完成 1 个番茄即进休息
+  long: 15,         // 休息时长（分钟），UI 档位：3 / 5 / 10；默认 15；每完成 1 个番茄即进休息
   longCustom: 0,    // 自定义休息时长（分钟），0 表示未启用
   vibrate: true,    // 阶段结束震动提醒
   sound: true,      // 阶段结束声音提醒

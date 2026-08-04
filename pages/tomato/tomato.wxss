@@ -193,6 +193,13 @@
 }
 .panel-item:active { background: #FAF8F5; }
 .panel-name { font-size: 30rpx; color: #333333; }
+.panel-hint {
+  flex: 1;
+  text-align: right;
+  font-size: 26rpx;
+  color: #999999;
+  margin-right: 12rpx;
+}
 .panel-arrow { font-size: 34rpx; color: #CCCCCC; }
 .panel-split {
   height: 16rpx;
@@ -293,12 +300,12 @@
   position: absolute;
   right: calc(28rpx + env(safe-area-inset-right));
   bottom: calc(28rpx + env(safe-area-inset-bottom));
-  width: 40rpx;
-  height: 40rpx;
+  width: 32rpx;
+  height: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0.35;
 }
 .fs-rotate:active { opacity: 0.6; }
-.fs-rotate-img { width: 24rpx; height: 24rpx; }
+.fs-rotate-img { width: 18rpx; height: 18rpx; }

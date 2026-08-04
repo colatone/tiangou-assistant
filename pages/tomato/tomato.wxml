@@ -61,6 +61,7 @@
 
       <view class="panel-item" bindtap="onToggleDurationInline">
         <text class="panel-name">时长</text>
+        <text class="panel-hint">{{focusHint}}</text>
         <text class="panel-arrow">{{showDurationInline ? '⌄' : '›'}}</text>
       </view>
       <view wx:if="{{showDurationInline}}">
@@ -83,6 +84,7 @@
       </view>
       <view class="panel-item" bindtap="onToggleBreakInline">
         <text class="panel-name">休息</text>
+        <text class="panel-hint">{{breakHint}}</text>
         <text class="panel-arrow">{{showBreakInline ? '⌄' : '›'}}</text>
       </view>
       <view wx:if="{{showBreakInline}}">
