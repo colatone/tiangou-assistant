@@ -5,7 +5,7 @@ var WAV = require('../../utils/wav')
 /* ═══ 常量（顶部分段，ES5）═══ */
 var PHASE = { IDLE: 'idle', FOCUS: 'focusing', LONG: 'long_break' }
 var FOCUS_OPTIONS = [5, 15, 40]
-var FOCUS_DEFAULT = 45
+var FOCUS_DEFAULT = 40
 var BREAK_OPTIONS = [5, 10, 15]
 var BREAK_DEFAULT = 15
 var LONG_EVERY = 4
@@ -64,11 +64,7 @@ Page({
     showBreakCustomInput: false,
     // 横屏全屏翻页时钟
     isLandscape: false,
-    flip: ['0', '0', '0', '0', '0', '0'],
-    // 自定义导航栏（navigationStyle: custom）
-    statusBarHeight: 0,
-    navHeight: 44,
-    headerHeight: 44
+    flip: ['0', '0', '0', '0', '0', '0']
   },
 
   // ═══ 实例字段（高频状态不入 data）═══
@@ -92,6 +88,7 @@ Page({
   _customDraft: 0,
   _breakCustomDraft: 0,
   _forcedPortrait: false,
+  _navBarFull: false,
 
   /* ═══ 生命周期 ═══ */
   onLoad: function () {
@@ -104,24 +101,6 @@ Page({
     this._initAudio()
     this._loadSession()
     this._syncToggles()
-    this._initCustomNav()
-  },
-
-  _initCustomNav: function () {
-    var info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
-    var statusBarHeight = info.statusBarHeight || 0
-    var navHeight = 44
-    try {
-      var menu = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null
-      if (menu && menu.height) {
-        navHeight = (menu.top - statusBarHeight) * 2 + menu.height
-      }
-    } catch (e) {}
-    this.setData({
-      statusBarHeight: statusBarHeight,
-      navHeight: navHeight,
-      headerHeight: statusBarHeight + navHeight
-    })
   },
 
   onShow: function () {
@@ -203,6 +182,23 @@ Page({
         setTimeout(function () { self._initRingCanvas() }, 300)
       }
     }
+    this._updateNavBar(full)
+  },
+
+  // 运行时横屏：标题栏文字清空并配色融入深色背景；竖屏恢复原生标题栏
+  _updateNavBar: function (full) {
+    if (!wx.setNavigationBarColor || !wx.setNavigationBarTitle) return
+    if (this._navBarFull === full) return
+    this._navBarFull = full
+    try {
+      if (full) {
+        wx.setNavigationBarTitle({ title: '' })
+        wx.setNavigationBarColor({ frontColor: '#ffffff', backgroundColor: '#1C1C22', animation: { duration: 0 } })
+      } else {
+        wx.setNavigationBarTitle({ title: '烂番茄' })
+        wx.setNavigationBarColor({ frontColor: '#000000', backgroundColor: '#FFF8F0', animation: { duration: 0 } })
+      }
+    } catch (e) {}
   },
 
   onHide: function () {
@@ -211,6 +207,7 @@ Page({
     this._saveSession()
     this.setData({ floatList: [] })
     try { wx.showTabBar({ animation: true }) } catch (e) {}
+    this._updateNavBar(false)
   },
 
   onUnload: function () {
@@ -219,6 +216,7 @@ Page({
     if (this._audioCtx) { try { this._audioCtx.close() } catch (e) {}; this._audioCtx = null }
     this.setData({ floatList: [] })
     try { wx.showTabBar({ animation: true }) } catch (e) {}
+    this._updateNavBar(false)
   },
 
   onShareAppMessage: function () {
